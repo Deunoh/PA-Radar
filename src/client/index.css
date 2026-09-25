@@ -69,6 +69,11 @@
     @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_-4px_rgba(15,23,42,0.06)]
       dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-none;
   }
+  /* Menu flottant : fond opaque (il passe au-dessus du contenu) et ombre plus marquée */
+  .popover {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10
+      dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/40;
+  }
   .btn,
   .btn-primary,
   .btn-secondary,
@@ -106,9 +111,18 @@
   scrollbar-width: thin;
 }
 
+/*
+ * Animations réduites (préférence système, fréquente sur les postes Windows d'entreprise) :
+ * les animations décoratives sont jouées une seule fois et instantanément.
+ * Les indicateurs de chargement (.animate-spin) sont exclus : ils gardent leur vitesse
+ * normale, sinon une animation infinie ramenée à 0,01 ms tourne à une vitesse folle.
+ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *:not(.animate-spin),
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

@@ -102,7 +102,7 @@ function SettingsMenu({ sml, onSmlChange }) {
         <Settings2 className="size-4" />
       </button>
       {open && (
-        <div className="card animate-enter absolute right-0 mt-2 w-60 p-1.5">
+        <div className="popover animate-enter absolute right-0 mt-2 w-60 p-1.5">
           <p className="label px-2.5 pt-1.5 pb-2">Réseau Peppol (SML)</p>
           {SML_OPTIONS.map((opt) => (
             <button
