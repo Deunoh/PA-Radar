@@ -1,0 +1,94 @@
+{
+  "smptype":"peppol",
+  "participantID":"iso6523-actorid-upis::0225:750620585",
+  "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:peppol:france:billing:cius:1.0::2.1",
+  "serviceinfo":{
+    "processes":[
+      {
+        "processID":"cenbii-procid-ubl::urn:peppol:france:billing:regulated",
+        "endpoints":[
+          {
+            "transportProfile":"peppol-transport-as4-v2_0",
+            "endpointReference":"https://ap.galaxygw.com/server/3089/as4",
+            "requireBusinessLevelSignature":false,
+            "minimumAuthenticationLevel":"1",
+            "serviceActivationDate":"2024-10-17T09:31:54",
+            "serviceExpirationDate":"2034-10-17T09:31:54",
+            "certificate":"MIIFeTCCA2GgAwIBAgIUL/GrVDdzOgdoGCErkUKD9kr/B14wDQYJKoZIhvcNAQEL\nBQAwTjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEE9wZW5QRVBQT0wgQUlTQkwxJDAi\nBgNVBAMTG1BFUFBPTCBBQ0NFU1MgUE9JTlQgQ0EgLSBHMzAeFw0yNjAzMTUwMDAw\nMDBaFw0yODAzMDMyMzU5NTlaMFoxCzAJBgNVBAYTAkZSMRgwFgYDVQQKDA9DZWN1\ncml0eS5jb20gU0ExHTAbBgNVBAsMFFBFUFBPTCBQUk9EVUNUSU9OIEFQMRIwEAYD\nVQQDDAlQT1AwMDA3MTcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCh\ndBK/q5OZNQZ6/h/Mv4fZ7yp5sTjRm9Rq5TZN45015ULtsZo7qk3QiXGs55xbCGkx\nyINKcpbMFaBbj7rRoeoH/w3Y7OXMVJ+4n0lVepE76mTi+Ly50cBvcBt/pic9tt0H\nxTLBCQAAz9TY/Qi5pD8NQZUwif2LLc+gb/iKx6x1CPzNZI8wY1Ci+uWDA9vWF/gF\nX9xNz/YFny/teWl1hyHT8wQUu0jwdYXfm3u78UOQdWWOKoF6SemckbAZlu59aX2Q\n0U+8MDVSfcAh/zzKv2Y9aDPzMhEUcSVqrc/+h331M+9Si5UNH6mMqOiK6cETT0f0\nGpJBkwkv9DYBc9oaV5r9AgMBAAGjggFBMIIBPTAOBgNVHQ8BAf8EBAMCBLAwFgYD\nVR0lAQH/BAwwCgYIKwYBBQUHAwIwHQYDVR0OBBYEFNr/3nScixYtRZwffrIPsGvL\nD4KyMB8GA1UdIwQYMBaAFPwyVkiry8G4+YOaL4ALKMz3/+rRMEoGA1UdHwRDMEEw\nP6A9oDuGOWh0dHA6Ly9jcmwub25lLm5sLmRpZ2ljZXJ0LmNvbS9QRVBQT0xBQ0NF\nU1NQT0lOVENBLUczLmNybDCBhgYIKwYBBQUHAQEEejB4MCsGCCsGAQUFBzABhh9o\ndHRwOi8vb2NzcC5vbmUubmwuZGlnaWNlcnQuY29tMEkGCCsGAQUFBzAChj1odHRw\nOi8vY2FjZXJ0cy5vbmUubmwuZGlnaWNlcnQuY29tL1BFUFBPTEFDQ0VTU1BPSU5U\nQ0EtRzMuY3J0MA0GCSqGSIb3DQEBCwUAA4ICAQCJSHHfeIbFR8931aD9+xpGCvxA\nwWm/m89VTts+rkbDcbQCTIy9WIZ5rZP2nTPxkuYjWvjwcaRWh3nzoKunm5sPWMEW\ntzcUI7km4ZJ2IGNY/Y3lxzO7cE13EtL4/Ke/s1mCiXa+XCk/YoYHtJC0J8p9Z8fW\nbPS4MCaXvhXTk9aZvN/3vpG37SClJjry6L9HmAhrH57hKl5dihUZI7Hwt+8A33ER\nJBwUHXq+OCjhLtk9fh81CCOqzMKA9qr9OqwSndn3O1xDfxsBC8oU5hmMrgx/IUOq\n+bR4QooewKkNRRMWmgNuLyMsabxdPfBUmfLIxhLL+c9CqnXj0SjRnsTIJhH0Xu5h\nzUwwBgRNbYdEKplsvQtOy95xCNDtFWAp9a8Rj1wfwn91Dle26tnfuorDq6xQtXZ0\nrX9o9exbDh0ONl6/OH+FGfggaBWlaqsmSZFtyn3f0WRAGCBzBrdwXn5VM5L+rQ+V\n4qjTe/5PxwtSE7wCWrz7bn3f6QB55ArYHiDNu+Vjs3TcqaLi/2iPTIvaMWHr5OW1\nSS686lZe6mHaw7M7aZYxqbOZGWnCLcX5fYvq/27A0vIvX9VxYazMzJP7BkPJ9DC2\n8Sio5gwxJIz+sAgC9NlwQ1gK3Hin3lUI9tR6MFhNxYeP1L/PsCOP2L07iOk7Wh+5\nuOJUTYnMTRA9p3hZEg==",
+            "certificateDetails":{
+              "parsable":true,
+              "subject":{
+                "name":"CN=POP000717,OU=PEPPOL PRODUCTION AP,O=Cecurity.com SA,C=FR",
+                "C":"FR",
+                "O":"Cecurity.com SA",
+                "OU":"PEPPOL PRODUCTION AP",
+                "CN":"POP000717"
+              },
+              "issuer":{
+                "name":"CN=PEPPOL ACCESS POINT CA - G3,O=OpenPEPPOL AISBL,C=BE",
+                "C":"BE",
+                "O":"OpenPEPPOL AISBL",
+                "CN":"PEPPOL ACCESS POINT CA - G3"
+              },
+              "serial10":273711970679885321050547013437082287298492434270,
+              "serial16":"2ff1ab5437733a076818212b914283f64aff075e",
+              "notBefore":"2026-03-15T00:00:00",
+              "notAfter":"2028-03-03T23:59:59",
+              "validByDate":true,
+              "sigAlgName":"SHA256withRSA"
+            },
+            "serviceDescription":"Cecurity (FR) Whitelabel AP",
+            "technicalContactUrl":"kurt.menu@cecurity.com",
+            "technicalInformationUrl":"https://www.cecurity.com",
+            "extension":null
+          }
+        ],
+        "extension":null
+      },
+      {
+        "processID":"cenbii-procid-ubl::urn:peppol:france:billing:non-regulated",
+        "endpoints":[
+          {
+            "transportProfile":"peppol-transport-as4-v2_0",
+            "endpointReference":"https://ap.galaxygw.com/server/3089/as4",
+            "requireBusinessLevelSignature":false,
+            "minimumAuthenticationLevel":"1",
+            "serviceActivationDate":"2024-10-17T09:31:54",
+            "serviceExpirationDate":"2034-10-17T09:31:54",
+            "certificate":"MIIFeTCCA2GgAwIBAgIUL/GrVDdzOgdoGCErkUKD9kr/B14wDQYJKoZIhvcNAQEL\nBQAwTjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEE9wZW5QRVBQT0wgQUlTQkwxJDAi\nBgNVBAMTG1BFUFBPTCBBQ0NFU1MgUE9JTlQgQ0EgLSBHMzAeFw0yNjAzMTUwMDAw\nMDBaFw0yODAzMDMyMzU5NTlaMFoxCzAJBgNVBAYTAkZSMRgwFgYDVQQKDA9DZWN1\ncml0eS5jb20gU0ExHTAbBgNVBAsMFFBFUFBPTCBQUk9EVUNUSU9OIEFQMRIwEAYD\nVQQDDAlQT1AwMDA3MTcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCh\ndBK/q5OZNQZ6/h/Mv4fZ7yp5sTjRm9Rq5TZN45015ULtsZo7qk3QiXGs55xbCGkx\nyINKcpbMFaBbj7rRoeoH/w3Y7OXMVJ+4n0lVepE76mTi+Ly50cBvcBt/pic9tt0H\nxTLBCQAAz9TY/Qi5pD8NQZUwif2LLc+gb/iKx6x1CPzNZI8wY1Ci+uWDA9vWF/gF\nX9xNz/YFny/teWl1hyHT8wQUu0jwdYXfm3u78UOQdWWOKoF6SemckbAZlu59aX2Q\n0U+8MDVSfcAh/zzKv2Y9aDPzMhEUcSVqrc/+h331M+9Si5UNH6mMqOiK6cETT0f0\nGpJBkwkv9DYBc9oaV5r9AgMBAAGjggFBMIIBPTAOBgNVHQ8BAf8EBAMCBLAwFgYD\nVR0lAQH/BAwwCgYIKwYBBQUHAwIwHQYDVR0OBBYEFNr/3nScixYtRZwffrIPsGvL\nD4KyMB8GA1UdIwQYMBaAFPwyVkiry8G4+YOaL4ALKMz3/+rRMEoGA1UdHwRDMEEw\nP6A9oDuGOWh0dHA6Ly9jcmwub25lLm5sLmRpZ2ljZXJ0LmNvbS9QRVBQT0xBQ0NF\nU1NQT0lOVENBLUczLmNybDCBhgYIKwYBBQUHAQEEejB4MCsGCCsGAQUFBzABhh9o\ndHRwOi8vb2NzcC5vbmUubmwuZGlnaWNlcnQuY29tMEkGCCsGAQUFBzAChj1odHRw\nOi8vY2FjZXJ0cy5vbmUubmwuZGlnaWNlcnQuY29tL1BFUFBPTEFDQ0VTU1BPSU5U\nQ0EtRzMuY3J0MA0GCSqGSIb3DQEBCwUAA4ICAQCJSHHfeIbFR8931aD9+xpGCvxA\nwWm/m89VTts+rkbDcbQCTIy9WIZ5rZP2nTPxkuYjWvjwcaRWh3nzoKunm5sPWMEW\ntzcUI7km4ZJ2IGNY/Y3lxzO7cE13EtL4/Ke/s1mCiXa+XCk/YoYHtJC0J8p9Z8fW\nbPS4MCaXvhXTk9aZvN/3vpG37SClJjry6L9HmAhrH57hKl5dihUZI7Hwt+8A33ER\nJBwUHXq+OCjhLtk9fh81CCOqzMKA9qr9OqwSndn3O1xDfxsBC8oU5hmMrgx/IUOq\n+bR4QooewKkNRRMWmgNuLyMsabxdPfBUmfLIxhLL+c9CqnXj0SjRnsTIJhH0Xu5h\nzUwwBgRNbYdEKplsvQtOy95xCNDtFWAp9a8Rj1wfwn91Dle26tnfuorDq6xQtXZ0\nrX9o9exbDh0ONl6/OH+FGfggaBWlaqsmSZFtyn3f0WRAGCBzBrdwXn5VM5L+rQ+V\n4qjTe/5PxwtSE7wCWrz7bn3f6QB55ArYHiDNu+Vjs3TcqaLi/2iPTIvaMWHr5OW1\nSS686lZe6mHaw7M7aZYxqbOZGWnCLcX5fYvq/27A0vIvX9VxYazMzJP7BkPJ9DC2\n8Sio5gwxJIz+sAgC9NlwQ1gK3Hin3lUI9tR6MFhNxYeP1L/PsCOP2L07iOk7Wh+5\nuOJUTYnMTRA9p3hZEg==",
+            "certificateDetails":{
+              "parsable":true,
+              "subject":{
+                "name":"CN=POP000717,OU=PEPPOL PRODUCTION AP,O=Cecurity.com SA,C=FR",
+                "C":"FR",
+                "O":"Cecurity.com SA",
+                "OU":"PEPPOL PRODUCTION AP",
+                "CN":"POP000717"
+              },
+              "issuer":{
+                "name":"CN=PEPPOL ACCESS POINT CA - G3,O=OpenPEPPOL AISBL,C=BE",
+                "C":"BE",
+                "O":"OpenPEPPOL AISBL",
+                "CN":"PEPPOL ACCESS POINT CA - G3"
+              },
+              "serial10":273711970679885321050547013437082287298492434270,
+              "serial16":"2ff1ab5437733a076818212b914283f64aff075e",
+              "notBefore":"2026-03-15T00:00:00",
+              "notAfter":"2028-03-03T23:59:59",
+              "validByDate":true,
+              "sigAlgName":"SHA256withRSA"
+            },
+            "serviceDescription":"Cecurity (FR) Whitelabel AP",
+            "technicalContactUrl":"kurt.menu@cecurity.com",
+            "technicalInformationUrl":"https://www.cecurity.com",
+            "extension":null
+          }
+        ],
+        "extension":null
+      }
+    ],
+    "extension":null
+  },
+  "queryDateTime":"2026-09-25T17:58:58.283109609Z",
+  "queryDurationMillis":152
+}

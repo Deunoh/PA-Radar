@@ -1,0 +1,119 @@
+{
+  "smptype":"peppol",
+  "participantID":"iso6523-actorid-upis::0225:750620585",
+  "urls":[
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3ACreditNote-2%3A%3ACreditNote%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Abilling%3A3.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1",
+      "niceName":"Peppol BIS Billing UBL Credit Note V3",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3ACreditNote-2%3A%3ACreditNote%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Aselfbilling%3A3.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:selfbilling:3.0::2.1",
+      "niceName":"Peppol BIS Self-Billing UBL Credit Note V3",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3ACreditNote-2%3A%3ACreditNote%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Apeppol%3Afrance%3Abilling%3Acius%3A1.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:peppol:france:billing:cius:1.0::2.1",
+      "niceName":"France UBL Credit Note CIUS",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3ACreditNote-2%3A%3ACreditNote%23%23urn%3Acen.eu%3Aen16931%3A2017%23conformant%23urn%3Apeppol%3Afrance%3Abilling%3Aextended%3A1.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#conformant#urn:peppol:france:billing:extended:1.0::2.1",
+      "niceName":"France UBL Credit Note Extension",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Abilling%3A3.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1",
+      "niceName":"Peppol BIS Billing UBL Invoice V3",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Aselfbilling%3A3.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:selfbilling:3.0::2.1",
+      "niceName":"Peppol BIS Self-Billing UBL Invoice V3",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Apeppol%3Afrance%3Abilling%3Acius%3A1.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:peppol:france:billing:cius:1.0::2.1",
+      "niceName":"France UBL Invoice CIUS",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23conformant%23urn%3Apeppol%3Afrance%3Abilling%3Aextended%3A1.0%3A%3A2.1",
+      "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:peppol:france:billing:extended:1.0::2.1",
+      "niceName":"France UBL Invoice Extension",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Apeppol%3Adoctype%3Apdf%2Bxml%23%23urn%3Acen.eu%3Aen16931%3A2017%23conformant%23urn%3Apeppol%3Afrance%3Abilling%3AFactur-X%3A1.0%3A%3AD22B",
+      "documentTypeID":"busdox-docid-qns::urn:peppol:doctype:pdf+xml##urn:cen.eu:en16931:2017#conformant#urn:peppol:france:billing:Factur-X:1.0::D22B",
+      "niceName":"France Factur-X",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aun%3Aunece%3Auncefact%3Adata%3Astandard%3ACrossDomainAcknowledgementAndResponse%3A100%3A%3ACrossDomainAcknowledgementAndResponse%23%23urn%3Apeppol%3Afrance%3Abilling%3Acdv%3A1.0%3A%3AD22B",
+      "documentTypeID":"busdox-docid-qns::urn:un:unece:uncefact:data:standard:CrossDomainAcknowledgementAndResponse:100::CrossDomainAcknowledgementAndResponse##urn:peppol:france:billing:cdv:1.0::D22B",
+      "niceName":"France CDAR",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aun%3Aunece%3Auncefact%3Adata%3Astandard%3ACrossIndustryInvoice%3A100%3A%3ACrossIndustryInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Afdc%3Apeppol.eu%3A2017%3Apoacc%3Abilling%3A3.0%3A%3AD16B",
+      "documentTypeID":"busdox-docid-qns::urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::D16B",
+      "niceName":"Peppol BIS Billing CII Invoice V3",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aun%3Aunece%3Auncefact%3Adata%3Astandard%3ACrossIndustryInvoice%3A100%3A%3ACrossIndustryInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23compliant%23urn%3Apeppol%3Afrance%3Abilling%3Acius%3A1.0%3A%3AD22B",
+      "documentTypeID":"busdox-docid-qns::urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:peppol:france:billing:cius:1.0::D22B",
+      "niceName":"France CII Invoice CIUS",
+      "state":"act",
+      "isDeprecated":false
+    },
+    {
+      "href":"https://smp.tickstar.com/peppol/iso6523-actorid-upis%3A%3A0225%3A750620585/services/busdox-docid-qns%3A%3Aurn%3Aun%3Aunece%3Auncefact%3Adata%3Astandard%3ACrossIndustryInvoice%3A100%3A%3ACrossIndustryInvoice%23%23urn%3Acen.eu%3Aen16931%3A2017%23conformant%23urn%3Apeppol%3Afrance%3Abilling%3Aextended%3A1.0%3A%3AD22B",
+      "documentTypeID":"busdox-docid-qns::urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#conformant#urn:peppol:france:billing:extended:1.0::D22B",
+      "niceName":"France CII Invoice Extension",
+      "state":"act",
+      "isDeprecated":false
+    }
+  ],
+  "businessCard":{
+    "participant":{
+      "scheme":"iso6523-actorid-upis",
+      "value":"0225:750620585"
+    },
+    "entity":[
+      {
+        "name":[
+          {
+            "name":"EARL BISONS D'AUVERGNE",
+            "language":"fr"
+          }
+        ],
+        "countrycode":"FR",
+        "geoinfo":"LD LE PLAIX 03240 ROCLES",
+        "additionalinfo":"FR_ASSUJETTI_ACTIVE",
+        "regdate":"2026-08-27"
+      }
+    ]
+  },
+  "queryDateTime":"2026-09-25T17:58:50.90657827Z",
+  "queryDurationMillis":279
+}
