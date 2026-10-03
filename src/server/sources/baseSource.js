@@ -12,6 +12,10 @@
  *            businessCard: ReturnType<parseBusinessCard> | null, raw: any }
  *   3. getServiceMetadata(participantId, documentTypeId, { sml })
  *        → { endpoints: NormalizedEndpoint[], raw: any }
+ *   4. searchDirectory(siren, { sml })  — facultatif
+ *        → { participants: [{ scheme, value, shortId, participantId, label, name, … }], total, raw }
+ *        Découvre les inscriptions impossibles à deviner (établissements, codes de routage).
+ *        Une source qui ne sait pas le faire renvoie null.
  *
  * Erreurs : lever un LookupError (../errors.js) avec le code approprié
  * (API_UNAVAILABLE, UPSTREAM_RATE_LIMITED, SMP_UNREACHABLE…).
@@ -49,6 +53,12 @@ export class PeppolSource {
   // eslint-disable-next-line no-unused-vars
   async getServiceMetadata(participantId, documentTypeId, options) {
     throw notImplemented(this, 'getServiceMetadata');
+  }
+
+  /** Facultatif : null signifie « recherche dans l'annuaire non disponible pour cette source ». */
+  // eslint-disable-next-line no-unused-vars
+  async searchDirectory(siren, options) {
+    return null;
   }
 }
 

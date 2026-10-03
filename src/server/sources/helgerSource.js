@@ -12,6 +12,10 @@ import { config } from '../config.js';
 import { LookupError } from '../errors.js';
 import { PeppolSource } from './baseSource.js';
 import { parseDocumentTypes, parseBusinessCard, extractEndpoints } from '../parsing/helgerParser.js';
+import { parseDirectorySearch } from '../parsing/directoryParser.js';
+
+/** Nombre maximum de résultats lus dans l'annuaire Peppol pour un SIREN. */
+const DIRECTORY_MAX_RESULTS = 100;
 
 const MAX_RETRIES_ON_429 = 2;
 const DEFAULT_RETRY_AFTER_S = 5;
@@ -43,12 +47,22 @@ export class HelgerSource extends PeppolSource {
   id = 'helger';
   label = 'peppol.helger.com';
 
-  constructor({ baseUrl = config.helgerApiBase, timeoutMs = config.externalTimeoutMs, minIntervalMs = config.helgerMinIntervalMs, fetchImpl = globalThis.fetch } = {}) {
+  constructor({
+    baseUrl = config.helgerApiBase,
+    directoryUrls = config.directoryUrls,
+    timeoutMs = config.externalTimeoutMs,
+    minIntervalMs = config.helgerMinIntervalMs,
+    directoryMinIntervalMs = 300,
+    fetchImpl = globalThis.fetch,
+  } = {}) {
     super();
     this.baseUrl = baseUrl;
+    this.directoryUrls = directoryUrls;
     this.timeoutMs = timeoutMs;
     this.fetch = fetchImpl;
     this.throttle = createThrottle(minIntervalMs);
+    // L'annuaire Peppol est un autre serveur : sa file est indépendante de celle de l'API Helger
+    this.directoryThrottle = createThrottle(directoryMinIntervalMs);
   }
 
   isAvailable() {
@@ -58,14 +72,15 @@ export class HelgerSource extends PeppolSource {
   /**
    * Appel HTTP GET avec timeout, espacement et nouvelles tentatives sur 429.
    * @param {string} path chemin relatif (déjà encodé)
-   * @param {'api'|'smp'} target pour choisir le bon code d'erreur si l'appel échoue
+   * @param {'api'|'smp'|'directory'} target pour choisir le bon code d'erreur si l'appel échoue
+   * @param {{ baseUrl?: string, throttle?: ReturnType<typeof createThrottle> }} [options]
    * @returns {Promise<{ status: number, body: any }>}
    */
-  async request(path, target) {
-    const url = `${this.baseUrl}${path}`;
+  async request(path, target, { baseUrl = this.baseUrl, throttle = this.throttle } = {}) {
+    const url = `${baseUrl}${path}`;
 
     for (let attempt = 0; ; attempt++) {
-      await this.throttle.wait();
+      await throttle.wait();
       let res;
       try {
         res = await this.fetch(url, {
@@ -82,11 +97,10 @@ export class HelgerSource extends PeppolSource {
               : 'Le SMP du participant ne répond pas',
           );
         }
+        const service = target === 'directory' ? "L'annuaire Peppol" : "L'API Peppol (peppol.helger.com)";
         throw new LookupError(
           'API_UNAVAILABLE',
-          timedOut
-            ? `L'API Peppol (peppol.helger.com) n'a pas répondu en ${this.timeoutMs / 1000} s`
-            : "L'API Peppol (peppol.helger.com) est injoignable",
+          timedOut ? `${service} n'a pas répondu en ${this.timeoutMs / 1000} s` : `${service} est injoignable`,
         );
       }
 
@@ -96,7 +110,7 @@ export class HelgerSource extends PeppolSource {
         await res.body?.cancel().catch(() => {});
         if (attempt < MAX_RETRIES_ON_429) {
           // La nouvelle tentative repasse par la file, qui est suspendue pendant Retry-After
-          this.throttle.pauseFor(delayS * 1000);
+          throttle.pauseFor(delayS * 1000);
           continue;
         }
         throw new LookupError(
@@ -156,5 +170,26 @@ export class HelgerSource extends PeppolSource {
       'SMP_UNREACHABLE',
       `Impossible de lire le point d'accès auprès du SMP (HTTP ${status})`,
     );
+  }
+
+  /**
+   * Recherche dans l'annuaire Peppol (Peppol Directory) toutes les inscriptions d'un SIREN :
+   * maille SIREN, établissements (SIREN_SIRET) et codes de routage, impossibles à deviner.
+   * @param {string} siren
+   * @param {{ sml: string }} options
+   * @returns {Promise<{ participants: ReturnType<typeof parseDirectorySearch>, total: number, raw: any }>}
+   */
+  async searchDirectory(siren, { sml }) {
+    const baseUrl = this.directoryUrls[sml];
+    if (!baseUrl) return { participants: [], total: 0, raw: null };
+    const { status, body } = await this.request(
+      `/search/1.0/json?q=${encodeURIComponent(siren)}&rpc=${DIRECTORY_MAX_RESULTS}`,
+      'directory',
+      { baseUrl, throttle: this.directoryThrottle },
+    );
+    if (status !== 200 || !body) {
+      throw new LookupError('API_UNAVAILABLE', `L'annuaire Peppol a renvoyé une réponse inattendue (HTTP ${status})`);
+    }
+    return { participants: parseDirectorySearch(body, siren), total: body['total-result-count'] ?? 0, raw: body };
   }
 }

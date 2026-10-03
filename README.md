@@ -17,11 +17,18 @@ Prérequis : **Node.js 22.9 ou plus récent** (version LTS 22 ou 24 recommandée
 ```bash
 npm install
 cp .env.example .env   # facultatif : les valeurs par défaut conviennent
-npm run dev
 ```
 
-- Interface : <http://localhost:5173>
-- API : <http://localhost:3001> (Vite redirige `/api` vers l'API, pas de souci de CORS)
+Il existe deux façons de lancer l'outil :
+
+| Usage                                    | Commandes                           | Adresse de l'interface  |
+| ---------------------------------------- | ----------------------------------- | ----------------------- |
+| **Utilisation au quotidien**             | `npm run build` (une fois) puis `npm start` | <http://localhost:3001> |
+| **Développement** (modifier le code)     | `npm run dev`                       | <http://localhost:5173> |
+
+> En mode développement, l'API tourne aussi sur le port 3001, mais l'interface est servie par Vite sur
+> le port 5173 (qui redirige `/api` vers l'API). Ouvrir <http://localhost:3001> redirige vers le 5173.
+> Après une modification du code, refaites `npm run build` pour mettre à jour la version servie par `npm start`.
 
 ### Autres commandes
 
@@ -42,6 +49,8 @@ npm run dev
 | `RATE_LIMIT_PER_MINUTE`  | `30`                             | Recherches unitaires autorisées par minute et par IP  |
 | `EXTERNAL_TIMEOUT_MS`    | `10000`                          | Délai maximum d'un appel à l'API externe              |
 | `HELGER_API_BASE`        | `https://peppol.helger.com/api`  | URL de l'API Peppol utilisée                          |
+| `DIRECTORY_URL_PROD`     | `https://directory.peppol.eu`    | Annuaire Peppol (réseau de production)                |
+| `DIRECTORY_URL_TEST`     | `https://test-directory.peppol.eu` | Annuaire Peppol (réseau de test)                    |
 | `HELGER_MIN_INTERVAL_MS` | `1200`                           | Espacement minimal entre deux appels à l'API Helger   |
 | `BATCH_PAUSE_MS`         | `1000`                           | Pause entre deux identifiants d'une recherche en lot  |
 | `BATCH_MAX_ITEMS`        | `500`                            | Nombre maximum d'identifiants par lot                 |
@@ -105,10 +114,18 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
 
 1. **Nettoyage et validation** : suppression des espaces, points et tirets, puis contrôle de la longueur
    (9 ou 14 chiffres) et de la clé de Luhn. Les SIRET de La Poste suivent une règle spécifique.
-2. **Candidats**, par ordre de priorité : `0225:{SIREN}` (schéma de la réforme française), `0002:{SIREN}`,
+2. **Candidats construits**, par ordre de priorité : `0225:{SIREN}_{SIRET}` (réforme FR, maille
+   établissement, si un SIRET a été saisi), `0225:{SIREN}` (réforme FR, maille SIREN), `0002:{SIREN}`,
    puis `0009:{SIRET}` si un SIRET a été saisi.
-3. **Existence** de chaque candidat (`/ppidexistence`), qui donne aussi l'adresse du SMP.
-4. Pour chaque candidat existant :
+3. **Existence** de chaque candidat construit (`/ppidexistence`), qui donne aussi l'adresse du SMP.
+   **En parallèle**, le SIREN est recherché dans l'**annuaire Peppol** (`directory.peppol.eu`, API de
+   recherche publique). La réforme française autorise plusieurs « mailles » d'adressage
+   (`SIREN`, `SIREN_SIRET`, `SIREN_SIRET_codeRoutage`, `SIREN_codeRoutage`) : une entreprise peut être
+   inscrite uniquement au niveau d'un établissement ou de codes de routage, qu'on ne peut pas deviner.
+   Les inscriptions découvertes sont ajoutées aux candidats (celles du SIRET saisi en premier), puis
+   confirmées auprès du SML. Si l'annuaire est injoignable, la recherche continue sans lui.
+4. Pour chaque candidat existant (les **3 premiers** au maximum : un grand compte peut avoir des dizaines
+   de codes de routage, tous listés dans « Identifiants testés ») :
    - lecture des **types de documents** et de la **Business Card** (`/smpquery?businessCard=true`) ;
    - choix d'un **type de document de référence** : une facture « France … » en priorité, sinon un autre
      type « France … », sinon « Peppol BIS Billing UBL Invoice V3 », sinon le premier disponible ;
@@ -131,7 +148,7 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
 - **L'API Helger est limitée à environ 1 requête par seconde** et renvoie HTTP 429 au-delà. Tous les appels
   passent donc par une file qui les espace de 1,2 s. Un 429 suspend la file pendant la durée `Retry-After`,
   puis l'appel est réessayé (2 fois au maximum). Une recherche complète prend donc **environ 5 s**
-  (3 existences + 2 lectures SMP).
+  (3 ou 4 existences + 2 lectures SMP ; la recherche dans l'annuaire Peppol se fait en parallèle).
 - Messages d'erreur distincts : identifiant invalide, non trouvé sur Peppol, API Peppol indisponible,
   API Peppol saturée, SMP qui ne répond pas, limite locale atteinte.
 

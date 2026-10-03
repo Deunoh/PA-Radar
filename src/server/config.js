@@ -20,6 +20,11 @@ export const config = {
   rateLimitPerMinute: int(process.env.RATE_LIMIT_PER_MINUTE, 30),
   externalTimeoutMs: int(process.env.EXTERNAL_TIMEOUT_MS, 10_000),
   helgerApiBase: (process.env.HELGER_API_BASE || 'https://peppol.helger.com/api').replace(/\/$/, ''),
+  // Annuaire Peppol (Peppol Directory), un par réseau
+  directoryUrls: {
+    peppolprod: (process.env.DIRECTORY_URL_PROD || 'https://directory.peppol.eu').replace(/\/$/, ''),
+    peppoltest: (process.env.DIRECTORY_URL_TEST || 'https://test-directory.peppol.eu').replace(/\/$/, ''),
+  },
   // Espacement minimal entre deux appels à l'API Helger (elle renvoie 429 au-delà d'~1 req/s)
   helgerMinIntervalMs: int(process.env.HELGER_MIN_INTERVAL_MS, 1200),
   batchPauseMs: int(process.env.BATCH_PAUSE_MS, 1000),

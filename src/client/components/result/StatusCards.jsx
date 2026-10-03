@@ -46,7 +46,7 @@ export function NotFoundCard({ response }) {
           </div>
           <div>
             <h3 className="label mb-2 flex items-center gap-1.5"><ListChecks className="size-3.5" /> Identifiants testés</h3>
-            <CandidatesList candidates={response.candidates} />
+            <CandidatesList candidates={response.candidates} directory={response.directory} />
           </div>
         </div>
       </div>

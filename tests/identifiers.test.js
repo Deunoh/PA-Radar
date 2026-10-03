@@ -7,6 +7,7 @@ import {
   buildParticipantId,
   buildCandidates,
   splitIdentifierList,
+  describeFrenchAddressing,
 } from '../src/shared/identifiers.js';
 
 describe('cleanIdentifier', () => {
@@ -77,9 +78,10 @@ describe('construction des identifiants Peppol', () => {
   it('buildParticipantId', () => {
     expect(buildParticipantId('0225', '750620585')).toBe('iso6523-actorid-upis::0225:750620585');
   });
-  it('à partir d\'un SIRET : 0225, 0002 puis 0009', () => {
+  it('à partir d\'un SIRET : 0225 établissement, 0225 SIREN, 0002 puis 0009', () => {
     const c = buildCandidates({ siren: '750620585', siret: '75062058500018' });
     expect(c.map((x) => x.participantId)).toEqual([
+      'iso6523-actorid-upis::0225:750620585_75062058500018',
       'iso6523-actorid-upis::0225:750620585',
       'iso6523-actorid-upis::0002:750620585',
       'iso6523-actorid-upis::0009:75062058500018',
@@ -98,5 +100,21 @@ describe('splitIdentifierList', () => {
   });
   it('conserve un identifiant formaté avec espaces et retire les doublons', () => {
     expect(splitIdentifierList('750 620 585 00018\n75062058500018\n750 620 585')).toEqual(['75062058500018', '750620585']);
+  });
+});
+
+describe('describeFrenchAddressing (4 formats d\'adresse de la réforme FR)', () => {
+  it('SIREN', () => {
+    expect(describeFrenchAddressing('750620585')).toMatchObject({ level: 'siren', format: 'SIREN', siret: null, extra: null });
+  });
+  it('SIREN_SIRET', () => {
+    expect(describeFrenchAddressing('923409346_92340934600049')).toMatchObject({ level: 'siret', format: 'SIREN_SIRET', siren: '923409346', siret: '92340934600049' });
+  });
+  it('SIREN_SIRET_CODEROUTAGE', () => {
+    expect(describeFrenchAddressing('923409346_92340934600049_compta')).toMatchObject({ level: 'routing', format: 'SIREN_SIRET_CODEROUTAGE', siret: '92340934600049', routingCode: 'compta' });
+  });
+  it('SIREN_SUFFIXE (suffixes contenant tirets ou soulignés, ou chiffres)', () => {
+    expect(describeFrenchAddressing('380129866_oa_auto-factu')).toMatchObject({ level: 'suffix', format: 'SIREN_SUFFIXE', siret: null, suffix: 'oa_auto-factu' });
+    expect(describeFrenchAddressing('380129866_achatpub_507807949')).toMatchObject({ level: 'suffix', suffix: 'achatpub_507807949' });
   });
 });

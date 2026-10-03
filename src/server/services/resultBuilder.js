@@ -8,6 +8,7 @@ import {
   isCertificateValid,
 } from '../parsing/helgerParser.js';
 import { detectTechnicalHost } from './hostDetection.js';
+import { describeFrenchAddressing } from '../../shared/identifiers.js';
 import { matchKnownAccessPoint } from './knownAccessPoints.js';
 
 /**
@@ -28,7 +29,7 @@ export function pickPrimaryEndpoint(endpoints) {
  * Construit l'objet `result` (sans l'enrichissement par la table de correspondance).
  *
  * @param {Object} input
- * @param {{ shortId: string, participantId: string, scheme: string }} input.candidate
+ * @param {{ shortId: string, participantId: string, scheme: string, value?: string, origin?: string }} input.candidate
  * @param {string|null} input.smpHostUri
  * @param {{ documentTypes: any[], businessCard: any }} input.serviceGroup
  * @param {{ documentTypeID: string, niceName: string } | null} input.referenceDocumentType
@@ -53,6 +54,9 @@ export function buildResult({ candidate, smpHostUri, serviceGroup, referenceDocu
     participantId: candidate.participantId,
     participantShortId: candidate.shortId,
     scheme: candidate.scheme,
+    // Maille d'adressage de la réforme FR (SIREN, établissement, code de routage)
+    addressing: candidate.scheme === '0225' && candidate.value ? describeFrenchAddressing(candidate.value) : null,
+    foundVia: candidate.origin === 'directory' ? 'directory' : 'identifier',
 
     companyName: bc?.companyName || null,
     address: bc?.address || null,

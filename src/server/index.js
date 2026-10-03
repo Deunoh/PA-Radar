@@ -40,11 +40,31 @@ app.use('/api', createKnownAccessPointsRouter(knownAccessPoints));
 
 app.use('/api', (_req, _res, next) => next(new LookupError('BAD_REQUEST', 'Route API inconnue')));
 
-// Front compilé (production)
+// Interface :
+//  - `npm run dev`   (option --dev) : servie par Vite sur le port 5173 → on y redirige
+//  - `npm start`     : front compilé (dist/), s'il existe
+//  - sinon           : page d'aide expliquant comment obtenir l'interface
+const isDev = process.argv.includes('--dev');
+const VITE_URL = 'http://localhost:5173';
 const distDir = path.join(config.rootDir, 'dist');
-if (fs.existsSync(distDir)) {
+const hasDist = fs.existsSync(path.join(distDir, 'index.html'));
+
+if (isDev) {
+  app.get(/^\/(?!api\/).*/, (req, res) => res.redirect(VITE_URL + req.originalUrl));
+} else if (hasDist) {
   app.use(express.static(distDir));
   app.get(/^\/(?!api\/).*/, (_req, res) => res.sendFile(path.join(distDir, 'index.html')));
+} else {
+  app.get(/^\/(?!api\/).*/, (_req, res) => {
+    res.status(503).type('html').send(`<!doctype html><html lang="fr"><meta charset="utf-8"><title>PAradar</title>
+<body style="font-family:system-ui,sans-serif;max-width:560px;margin:12vh auto;padding:0 16px;line-height:1.6;color:#0f172a">
+<h1 style="font-size:22px">L'interface de PAradar n'est pas compilée</h1>
+<p>L'API fonctionne, mais le dossier <code>dist/</code> est absent. Deux possibilités :</p>
+<ul>
+<li>Compiler l'interface puis relancer : <code>npm run build</code> puis <code>npm start</code> → interface sur ce port.</li>
+<li>Ou lancer le mode développement : <code>npm run dev</code> → interface sur <a href="${VITE_URL}">${VITE_URL}</a>.</li>
+</ul></body></html>`);
+  });
 }
 
 // Gestion centralisée des erreurs → JSON { error: { code, message } }
@@ -59,5 +79,13 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`PAradar API → http://localhost:${config.port}  (SML par défaut : ${config.defaultSml})`);
+  const api = `http://localhost:${config.port}`;
+  console.log(`PAradar – API sur ${api} (SML par défaut : ${config.defaultSml})`);
+  if (isDev) {
+    console.log(`\n  ➜  Ouvrez l'interface : ${VITE_URL}\n`);
+  } else if (hasDist) {
+    console.log(`\n  ➜  Ouvrez l'interface : ${api}\n`);
+  } else {
+    console.warn(`\n  ⚠  Interface non compilée : lancez « npm run build » puis « npm start »,\n     ou « npm run dev » (interface sur ${VITE_URL}).\n`);
+  }
 });

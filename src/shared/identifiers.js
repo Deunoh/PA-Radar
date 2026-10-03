@@ -10,13 +10,19 @@
 export const PARTICIPANT_SCHEME = 'iso6523-actorid-upis';
 
 /**
- * Schémas ICD testés, dans l'ordre de priorité.
- * - 0225 : schéma de la réforme française (SIREN), prioritaire
- * - 0002 : SIRENE historique (SIREN)
- * - 0009 : SIRET (uniquement si un SIRET a été saisi)
+ * Identifiants construits et testés systématiquement, dans l'ordre de priorité.
+ * - 0225 SIREN_SIRET : réforme FR, maille établissement (si un SIRET a été saisi) —
+ *                      la plus précise pour cet établissement, donc prioritaire
+ * - 0225 SIREN       : réforme FR, maille SIREN
+ * - 0002 SIREN       : SIRENE historique
+ * - 0009 SIRET       : SIRET (si un SIRET a été saisi)
+ *
+ * Les autres mailles de la réforme (codes de routage, autres établissements) ne peuvent
+ * pas être devinées : elles sont découvertes via l'annuaire Peppol (voir lookupService).
  */
 export const CANDIDATE_SCHEMES = [
-  { scheme: '0225', uses: 'siren', label: 'Réforme FR (SIREN)' },
+  { scheme: '0225', uses: 'siren_siret', label: 'Réforme FR · établissement (SIREN_SIRET)' },
+  { scheme: '0225', uses: 'siren', label: 'Réforme FR · SIREN' },
   { scheme: '0002', uses: 'siren', label: 'SIRENE (SIREN)' },
   { scheme: '0009', uses: 'siret', label: 'SIRET' },
 ];
@@ -144,8 +150,9 @@ export function buildParticipantId(scheme, value) {
  * @returns {Candidate[]}
  */
 export function buildCandidates({ siren, siret = null }) {
-  return CANDIDATE_SCHEMES.filter((c) => c.uses === 'siren' || siret).map((c) => {
-    const value = c.uses === 'siren' ? siren : siret;
+  const values = { siren, siret, siren_siret: siret ? `${siren}_${siret}` : null };
+  return CANDIDATE_SCHEMES.filter((c) => values[c.uses]).map((c) => {
+    const value = values[c.uses];
     return {
       scheme: c.scheme,
       value,
@@ -154,6 +161,34 @@ export function buildCandidates({ siren, siret = null }) {
       label: c.label,
     };
   });
+}
+
+/**
+ * Décrit le format d'adresse électronique d'un identifiant de la réforme française (schéma 0225).
+ * Les 4 formats prévus par la réforme :
+ *   - SIREN                    → l'entreprise
+ *   - SIREN_SIRET              → un établissement
+ *   - SIREN_SIRET_CODEROUTAGE  → un service d'un établissement (code de routage)
+ *   - SIREN_SUFFIXE            → un suffixe libre choisi par l'entreprise
+ * @param {string} value partie après le schéma, ex. "923409346_92340934600049"
+ * @returns {{ level: 'siren'|'siret'|'routing'|'suffix', format: string, siren: string, siret: string|null,
+ *             routingCode: string|null, suffix: string|null, extra: string|null, label: string }}
+ */
+export function describeFrenchAddressing(value) {
+  const [siren, ...rest] = String(value || '').split('_');
+  const base = { siren, siret: null, routingCode: null, suffix: null, extra: null };
+  if (rest.length && /^\d{14}$/.test(rest[0])) {
+    const siret = rest.shift();
+    const routingCode = rest.length ? rest.join('_') : null;
+    return routingCode
+      ? { ...base, level: 'routing', format: 'SIREN_SIRET_CODEROUTAGE', siret, routingCode, extra: routingCode, label: 'Établissement + code de routage' }
+      : { ...base, level: 'siret', format: 'SIREN_SIRET', siret, label: 'Établissement (SIRET)' };
+  }
+  if (rest.length) {
+    const suffix = rest.join('_');
+    return { ...base, level: 'suffix', format: 'SIREN_SUFFIXE', suffix, extra: suffix, label: 'Suffixe' };
+  }
+  return { ...base, level: 'siren', format: 'SIREN', label: 'Entreprise (SIREN)' };
 }
 
 /**

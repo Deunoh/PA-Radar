@@ -34,6 +34,7 @@ export function ResultCard({ response, onRefresh, refreshing, onKnownSaved }) {
   const reform = r.frenchReform.regulated || r.frenchReform.nonRegulated;
   const frenchDocs = r.documentTypes.filter((d) => d.isFrench);
   const otherDocs = r.documentTypes.filter((d) => !d.isFrench);
+  const existingCount = response.candidates.filter((c) => c.exists).length;
 
   return (
     <article className="card animate-enter overflow-hidden">
@@ -111,14 +112,40 @@ export function ResultCard({ response, onRefresh, refreshing, onKnownSaved }) {
           {r.certificate.isValid === false && <Badge tone="red" icon={ShieldAlert}>Certificat expiré</Badge>}
         </div>
 
+        {existingCount > 1 && (
+          <p className="mt-4 flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-300">
+            <ListChecks className="mt-0.5 size-4 shrink-0 text-slate-400" />
+            <span>
+              {existingCount} inscriptions Peppol pour ce SIREN (établissements ou codes de routage). Le résultat affiché
+              concerne <span className="font-mono">{r.participantShortId}</span> ; voir « Identifiants testés ».
+            </span>
+          </p>
+        )}
+
         {!r.pa.isKnown && r.pa.popId && <UnknownPopPrompt popId={r.pa.popId} operator={r.pa.operator} onSaved={onKnownSaved} />}
       </div>
 
       {/* ——— Grille de détails ——— */}
       <dl className="grid gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-2 dark:border-slate-800 dark:bg-slate-800">
         <Detail label="SIREN" value={response.siren} display={formatIdentifier(response.siren)} mono />
-        <Detail label="SIRET" value={response.siret} display={response.siret ? formatIdentifier(response.siret) : null} mono empty="Non saisi" />
-        <Detail label="Identifiant Peppol" value={r.participantId} display={r.participantShortId} mono hint={r.participantId} />
+        <Detail
+          label="SIRET"
+          value={response.siret || r.addressing?.siret}
+          display={(response.siret || r.addressing?.siret) ? formatIdentifier(response.siret || r.addressing.siret) : null}
+          hint={!response.siret && r.addressing?.siret ? "Établissement inscrit (non saisi)" : null}
+          mono
+          empty="Non saisi"
+        />
+        <Detail
+          label="Identifiant Peppol"
+          value={r.participantId}
+          display={r.participantShortId}
+          mono
+          hint={[
+            r.addressing && `Format : ${r.addressing.format}${r.addressing.extra ? ` (« ${r.addressing.extra} »)` : ''}`,
+            r.foundVia === 'directory' && "trouvé via l'annuaire Peppol",
+          ].filter(Boolean).join(' · ') || r.participantId}
+        />
         <Detail label="ID POP (point d'accès)" value={r.pa.popId} mono />
         <Detail label="Exploitant (O=)" value={r.pa.operator} />
         <Detail
@@ -198,7 +225,7 @@ export function ResultCard({ response, onRefresh, refreshing, onKnownSaved }) {
       </Collapsible>
 
       <Collapsible title="Identifiants testés" icon={ListChecks} count={response.candidates.length}>
-        <CandidatesList candidates={response.candidates} />
+        <CandidatesList candidates={response.candidates} directory={response.directory} />
       </Collapsible>
 
       <Collapsible
