@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, Loader2 } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { cx } from '../../utils/format.js';
 
 const STEPS = ["Vérification de l'identifiant", 'Recherche sur Peppol', "Lecture du point d'accès"];
@@ -29,19 +29,18 @@ export function LookupSteps({ finished, candidateCount = 3 }) {
           const running = i === active;
           return (
             <li key={label} className="flex items-center gap-3 text-sm">
+              {/* En cours : c'est l'anneau lui-même qui tourne (une icône posée dedans paraissait
+                  décentrée en tournant, selon le zoom et l'échelle de l'écran) */}
               <span
                 className={cx(
-                  'grid size-6 place-items-center rounded-full border transition-all duration-300',
-                  done && 'border-accent-600 bg-accent-600 text-white dark:border-accent-500 dark:bg-accent-500',
-                  running && 'border-accent-300 text-accent-600 dark:border-accent-700 dark:text-accent-400',
-                  !done && !running && 'border-slate-200 dark:border-slate-700',
+                  'grid size-6 shrink-0 place-items-center rounded-full',
+                  done && 'border border-accent-600 bg-accent-600 text-white dark:border-accent-500 dark:bg-accent-500',
+                  running &&
+                    'animate-spin border-2 border-accent-200 border-t-accent-600 dark:border-accent-900 dark:border-t-accent-400',
+                  !done && !running && 'border border-slate-200 dark:border-slate-700',
                 )}
               >
-                {done ? (
-                  <Check className="animate-fade size-3.5" strokeWidth={3} />
-                ) : running ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : null}
+                {done && <Check className="animate-fade size-3.5" strokeWidth={3} />}
               </span>
               <span
                 className={cx(
