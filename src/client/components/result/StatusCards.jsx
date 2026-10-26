@@ -2,7 +2,7 @@ import { SearchX, BookOpen, AlertTriangle, WifiOff, ServerCrash, Timer, ListChec
 import { buildTicketSummary } from '../../../shared/summary.js';
 import { useCopy } from '../../hooks/useCopy.js';
 import { CandidatesList } from './CandidatesList.jsx';
-import { PeppolCheckLink } from './primitives.jsx';
+import { VerificationLinks } from './primitives.jsx';
 
 /** Carte « aucune inscription trouvée » : ton neutre, causes possibles, renvoi vers le PPF. */
 export function NotFoundCard({ response }) {
@@ -51,9 +51,10 @@ export function NotFoundCard({ response }) {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 dark:border-slate-800 dark:bg-slate-900/40">
-        <PeppolCheckLink siren={response.siren} />
-        <button type="button" className="btn-secondary" onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}>
+      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 dark:border-slate-800 dark:bg-slate-900/40">
+        <span className="mr-1 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</span>
+        <VerificationLinks siren={response.siren} siret={response.siret} />
+        <button type="button" className="btn-secondary sm:ml-auto" onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}>
           <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket
         </button>
       </div>

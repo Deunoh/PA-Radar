@@ -1,10 +1,12 @@
 /**
- * Petits composants réutilisables : bouton copier, badge, section repliable, lien PeppolCheck.fr.
+ * Petits composants réutilisables : bouton copier, badge, section repliable, liens de vérification.
  */
 import { useState } from 'react';
 import { Check, Copy, ChevronRight, ExternalLink } from 'lucide-react';
 import { useCopy } from '../../hooks/useCopy.js';
 import { cx } from '../../utils/format.js';
+import peppolCheckIcon from '../../assets/peppolcheck.svg';
+import annuaireIcon from '../../assets/annuaire-entreprises.svg';
 
 export function CopyButton({ value, label = 'Copier', message, className }) {
   const copy = useCopy();
@@ -78,20 +80,44 @@ export function Collapsible({ title, icon: Icon, count, defaultOpen = false, act
 }
 
 /**
- * Ouvre la fiche de l'entreprise sur PeppolCheck.fr, pour la vérification demandée.
- * PeppolCheck.fr n'a de page qu'au niveau du SIREN (0225:SIREN), pas de l'établissement.
+ * Boutons vers les sites officiels de vérification, avec leur logo :
+ *  - PeppolCheck.fr, qui n'a de page qu'au niveau du SIREN (0225:SIREN), pas de l'établissement ;
+ *  - l'Annuaire des Entreprises, sur la fiche de l'établissement si un SIRET a été saisi.
  */
-export function PeppolCheckLink({ siren, className }) {
+export function VerificationLinks({ siren, siret }) {
   if (!siren) return null;
   return (
+    <>
+      <OfficialLink
+        href={`https://peppolcheck.fr/0225:${siren}`}
+        icon={peppolCheckIcon}
+        label="PeppolCheck.fr"
+      />
+      <OfficialLink
+        href={
+          siret
+            ? `https://annuaire-entreprises.data.gouv.fr/etablissement/${siret}`
+            : `https://annuaire-entreprises.data.gouv.fr/entreprise/${siren}`
+        }
+        icon={annuaireIcon}
+        label="Annuaire des Entreprises"
+      />
+    </>
+  );
+}
+
+function OfficialLink({ href, icon, label }) {
+  return (
     <a
-      href={`https://peppolcheck.fr/0225:${siren}`}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
-      title="Vérifier sur PeppolCheck.fr (nouvel onglet)"
-      className={cx('btn-secondary whitespace-nowrap', className)}
+      title={`Vérifier sur ${label} (nouvel onglet)`}
+      className="btn-secondary h-9 gap-2 whitespace-nowrap !pl-2"
     >
-      PeppolCheck.fr <ExternalLink className="size-3.5 text-slate-400" />
+      <img src={icon} alt="" className="size-5 rounded-md bg-white ring-1 ring-slate-200 dark:ring-slate-700" />
+      {label}
+      <ExternalLink className="size-3.5 text-slate-400" />
     </a>
   );
 }

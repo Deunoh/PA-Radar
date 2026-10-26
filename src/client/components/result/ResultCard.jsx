@@ -19,7 +19,7 @@ import { formatIdentifier } from '../../../shared/identifiers.js';
 import { buildTicketSummary } from '../../../shared/summary.js';
 import { useCopy } from '../../hooks/useCopy.js';
 import { formatDate, formatDateTime, formatDuration, cx } from '../../utils/format.js';
-import { Badge, Collapsible, CopyButton, PeppolCheckLink } from './primitives.jsx';
+import { Badge, Collapsible, CopyButton, VerificationLinks } from './primitives.jsx';
 import { JsonViewer } from './JsonViewer.jsx';
 import { CandidatesList } from './CandidatesList.jsx';
 
@@ -232,6 +232,12 @@ export function ResultCard({ response, onRefresh, refreshing }) {
         <JsonViewer data={response} />
       </Collapsible>
 
+      {/* ——— Vérification sur les sites officiels ——— */}
+      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-5 py-3 sm:px-7 dark:border-slate-800">
+        <span className="mr-1 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</span>
+        <VerificationLinks siren={response.siren} siret={response.siret} />
+      </div>
+
       {/* ——— Pied : méta + action principale ——— */}
       <div className="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 dark:border-slate-800 dark:bg-slate-900/40">
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
@@ -241,16 +247,13 @@ export function ResultCard({ response, onRefresh, refreshing }) {
           </span>
           {response.sml !== 'peppolprod' && <span className="font-mono">{response.sml}</span>}
         </p>
-        <div className="flex shrink-0 gap-2">
-          <PeppolCheckLink siren={response.siren} className="h-10" />
-          <button
-            type="button"
-            className="btn-primary h-10 whitespace-nowrap"
-            onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}
-          >
-            <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket
-          </button>
-        </div>
+        <button
+          type="button"
+          className="btn-primary h-10"
+          onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}
+        >
+          <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket
+        </button>
       </div>
     </article>
   );
