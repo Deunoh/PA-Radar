@@ -22,13 +22,12 @@ import { formatDate, formatDateTime, formatDuration, cx } from '../../utils/form
 import { Badge, Collapsible, CopyButton } from './primitives.jsx';
 import { JsonViewer } from './JsonViewer.jsx';
 import { CandidatesList } from './CandidatesList.jsx';
-import { UnknownPopPrompt } from './UnknownPopPrompt.jsx';
 
 /**
  * Carte résultat d'une recherche aboutie.
- * @param {{ response: any, onRefresh: () => void, refreshing: boolean, onKnownSaved: () => void }} props
+ * @param {{ response: any, onRefresh: () => void, refreshing: boolean }} props
  */
-export function ResultCard({ response, onRefresh, refreshing, onKnownSaved }) {
+export function ResultCard({ response, onRefresh, refreshing }) {
   const copy = useCopy();
   const r = response.result;
   const reform = r.frenchReform.regulated || r.frenchReform.nonRegulated;
@@ -78,8 +77,7 @@ export function ResultCard({ response, onRefresh, refreshing, onKnownSaved }) {
               <span className="text-2xl font-semibold tracking-tight text-accent-900 sm:text-3xl dark:text-white">{r.pa.name || 'Inconnue'}</span>
               {r.pa.popId && <span className="font-mono text-sm text-accent-700/80 dark:text-accent-300">{r.pa.popId}</span>}
             </p>
-            {r.pa.note && <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{r.pa.note}</p>}
-            {!r.pa.isKnown && r.pa.operator && (
+            {r.pa.operator && (
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Nom issu du certificat du point d'accès (O=)</p>
             )}
           </div>
@@ -121,8 +119,6 @@ export function ResultCard({ response, onRefresh, refreshing, onKnownSaved }) {
             </span>
           </p>
         )}
-
-        {!r.pa.isKnown && r.pa.popId && <UnknownPopPrompt popId={r.pa.popId} operator={r.pa.operator} onSaved={onKnownSaved} />}
       </div>
 
       {/* ——— Grille de détails ——— */}

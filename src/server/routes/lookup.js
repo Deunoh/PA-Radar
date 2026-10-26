@@ -51,7 +51,6 @@ function toBatchItem(id, response) {
     peppol: Boolean(r),
     frenchReform: r ? r.frenchReform.regulated || r.frenchReform.nonRegulated : false,
     pa: r?.pa.name || null,
-    paKnown: Boolean(r?.pa.isKnown),
     popId: r?.pa.popId || null,
     operator: r?.pa.operator || null,
     technicalHost: r?.technicalHost || null,

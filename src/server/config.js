@@ -29,5 +29,4 @@ export const config = {
   helgerMinIntervalMs: int(process.env.HELGER_MIN_INTERVAL_MS, 1200),
   batchPauseMs: int(process.env.BATCH_PAUSE_MS, 1000),
   batchMaxItems: int(process.env.BATCH_MAX_ITEMS, 500),
-  knownAccessPointsFile: path.join(rootDir, 'data', 'known-access-points.json'),
 };

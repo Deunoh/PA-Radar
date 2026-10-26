@@ -9,13 +9,10 @@ import fs from 'node:fs';
 import { config, SUPPORTED_SMLS } from './config.js';
 import { LookupError } from './errors.js';
 import { getDefaultSource, sources } from './sources/index.js';
-import { KnownAccessPointsStore } from './services/knownAccessPoints.js';
 import { LookupService } from './services/lookupService.js';
 import { createLookupRouter } from './routes/lookup.js';
-import { createKnownAccessPointsRouter } from './routes/knownAccessPoints.js';
 
-const knownAccessPoints = new KnownAccessPointsStore(config.knownAccessPointsFile);
-const lookupService = new LookupService({ source: getDefaultSource(), knownAccessPoints });
+const lookupService = new LookupService({ source: getDefaultSource() });
 
 const app = express();
 app.disable('x-powered-by');
@@ -36,7 +33,6 @@ app.get('/api/config', (_req, res) => {
 });
 
 app.use('/api', createLookupRouter(lookupService));
-app.use('/api', createKnownAccessPointsRouter(knownAccessPoints));
 
 app.use('/api', (_req, _res, next) => next(new LookupError('BAD_REQUEST', 'Route API inconnue')));
 

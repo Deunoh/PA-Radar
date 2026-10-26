@@ -66,7 +66,7 @@ Il existe deux façons de lancer l'outil :
 2. Appuyez sur **Entrée**.
 3. La carte résultat affiche :
    - le nom et l'adresse de l'entreprise (Business Card de l'annuaire Peppol) ;
-   - **la plateforme agréée** : nom issu de la table des points d'accès connus, sinon le `O=` du certificat ;
+   - **la plateforme agréée** : nom de l'exploitant (`O=`) du certificat du point d'accès ;
    - des badges : inscrit sur Peppol, inscrit réforme FR, assujetti actif, certificat valide ou expiré ;
    - le détail technique, chaque valeur avec un bouton copier ;
    - les documents acceptés, les identifiants testés et le JSON brut, dans des sections repliables ;
@@ -75,7 +75,7 @@ Il existe deux façons de lancer l'outil :
      ```
      SIRET 75062058500018 – EARL BISONS D'AUVERGNE
      Peppol : oui (0225:750620585) – Réforme FR : oui
-     PA : Cecurity (POP000717) – Point d'accès marque blanche hébergé chez Tickstar
+     PA : Cecurity.com SA (POP000717) – Point d'accès marque blanche hébergé chez Tickstar
      Vérifié le 25/09/2026 via SMP Peppol
      ```
 
@@ -90,14 +90,6 @@ par une, avec une pause entre chaque, et la progression s'affiche en temps réel
 Le tableau se trie et se filtre par PA. L'export CSV utilise le point-virgule et l'UTF-8 avec BOM, pour
 qu'Excel l'ouvre directement. Un clic sur une ligne ouvre la fiche détaillée.
 
-### Points d'accès connus
-
-La table `data/known-access-points.json` associe un **ID POP** (CN du certificat du point d'accès) à une
-plateforme agréée commerciale et à une note. Quand une recherche tombe sur un ID POP inconnu, la carte
-résultat propose de l'ajouter. L'onglet dédié sert à consulter, ajouter, modifier et supprimer les entrées.
-La correspondance se fait d'abord par ID POP, puis à défaut par nom d'exploitant (`O=`, ou champ `operator`
-de l'entrée).
-
 ### Réseau de test
 
 Le menu ⚙ de l'en-tête bascule entre le SML de production (`peppolprod`) et celui de test (`peppoltest`).
@@ -108,8 +100,6 @@ Le menu ⚙ de l'en-tête bascule entre le SML de production (`peppolprod`) et c
 
 ```
 Navigateur ──► /api/lookup ──► LookupService ──► source « helger » ──► peppol.helger.com ──► SML / SMP
-                                     │
-                                     └── table des points d'accès connus (data/known-access-points.json)
 ```
 
 1. **Nettoyage et validation** : suppression des espaces, points et tirets, puis contrôle de la longueur
@@ -136,8 +126,6 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
    - si la description du service mentionne « Whitelabel » ou « white label », déduction de
      l'**hébergeur technique** d'après les domaines de l'endpoint et du SMP (ex. `galaxygw.com` ou
      `tickstar.com` → Tickstar).
-5. **Enrichissement** par la table des points d'accès connus, recalculé à chaque lecture pour qu'un ajout
-   dans la table soit pris en compte immédiatement.
 
 ### Robustesse
 
@@ -158,9 +146,6 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
 | ---------------------------------------- | ------------------------------------------------------------ |
 | `GET /api/lookup?id=…&sml=…&refresh=1`   | Recherche unitaire (JSON normalisé + réponses brutes)        |
 | `POST /api/lookup/batch` `{ ids, sml }`  | Recherche en lot, progression en `text/event-stream`         |
-| `GET /api/known-access-points`           | Liste de la table de correspondance                          |
-| `POST /api/known-access-points`          | Ajout ou modification `{ popId, pa, note?, operator? }`      |
-| `DELETE /api/known-access-points/:popId` | Suppression                                                  |
 | `GET /api/config`                        | Configuration utile au front                                 |
 
 ---
@@ -168,13 +153,12 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
 ## Organisation du code
 
 ```
-data/known-access-points.json   table de correspondance ID POP → PA
 src/shared/                     code partagé front/back (identifiants, résumé pour ticket)
 src/server/
   index.js                      serveur Express
   config.js · errors.js         configuration, erreurs typées
-  routes/                       /api/lookup, /api/lookup/batch, /api/known-access-points
-  services/                     orchestration, cache, construction du résultat, hébergeur, table
+  routes/                       /api/lookup, /api/lookup/batch
+  services/                     orchestration, cache, construction du résultat, hébergeur
   parsing/helgerParser.js       lecture des JSON de l'API Helger (fonctions pures)
   sources/
     baseSource.js               interface commune des sources
@@ -211,7 +195,7 @@ Les tests couvrent :
 - le parsing des réponses, sur les **réponses réelles** enregistrées pour `0225:750620585`
   (EARL BISONS D'AUVERGNE, Cecurity / POP000717, hébergé chez Tickstar) ;
 - le dédoublonnage des certificats, la détection de la réforme FR et de l'hébergeur en marque blanche ;
-- la table de correspondance, le résumé pour ticket, la gestion des 429 et des timeouts, et le service de
+- le résumé pour ticket, la gestion des 429 et des timeouts, et le service de
   recherche de bout en bout (source simulée, cache compris).
 
 ---

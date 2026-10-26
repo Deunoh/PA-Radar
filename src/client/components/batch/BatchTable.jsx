@@ -119,7 +119,6 @@ export function BatchTable({ items, paFilter, onPaFilterChange, onOpen }) {
                   </td>
                   <td className="px-3 py-2.5 font-medium whitespace-nowrap">
                     {i.pa || <span className="font-normal text-slate-300 dark:text-slate-600">—</span>}
-                    {i.pa && !i.paKnown && <span className="ml-1.5 text-xs font-normal text-slate-400" title="Nom issu du certificat (ID POP absent de la table)">O=</span>}
                   </td>
                   <td className="px-3 py-2.5 font-mono text-[13px]">{i.popId || <span className="text-slate-300 dark:text-slate-600">—</span>}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap">

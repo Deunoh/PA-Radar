@@ -6,7 +6,7 @@ import { chooseReferenceDocumentType } from '../parsing/helgerParser.js';
 import { LookupError } from '../errors.js';
 import { config, SUPPORTED_SMLS } from '../config.js';
 import { TtlCache } from './cache.js';
-import { buildResult, applyKnownAccessPoint } from './resultBuilder.js';
+import { buildResult } from './resultBuilder.js';
 
 /** Nombre maximum de candidats existants pour lesquels on lit le point d'accès. */
 export const MAX_DETAILED_CANDIDATES = 3;
@@ -63,13 +63,10 @@ function mergeDirectoryResults(candidates, outcome, validation) {
 
 export class LookupService {
   /**
-   * @param {{ source: import('../sources/baseSource.js').PeppolSource,
-   *           knownAccessPoints: import('./knownAccessPoints.js').KnownAccessPointsStore,
-   *           cacheTtlMs?: number }} deps
+   * @param {{ source: import('../sources/baseSource.js').PeppolSource, cacheTtlMs?: number }} deps
    */
-  constructor({ source, knownAccessPoints, cacheTtlMs = config.cacheTtlMs }) {
+  constructor({ source, cacheTtlMs = config.cacheTtlMs }) {
     this.source = source;
-    this.knownAccessPoints = knownAccessPoints;
     this.cache = new TtlCache(cacheTtlMs);
     /** Recherches en cours, pour mutualiser deux demandes identiques simultanées */
     this.inFlight = new Map();
@@ -115,9 +112,7 @@ export class LookupService {
       cached = false;
     }
 
-    // L'enrichissement est appliqué à chaque lecture (la table peut avoir changé)
-    const table = await this.knownAccessPoints.load();
-    const out = { ...response, input: String(rawInput), result: applyKnownAccessPoint(response.result, table), cached };
+    const out = { ...response, input: String(rawInput), cached };
     if (!includeRaw) delete out.raw;
     return out;
   }
