@@ -241,11 +241,11 @@ export function ResultCard({ response, onRefresh, refreshing }) {
           </span>
           {response.sml !== 'peppolprod' && <span className="font-mono">{response.sml}</span>}
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 gap-2">
           <PeppolCheckLink siren={response.siren} className="h-10" />
           <button
             type="button"
-            className="btn-primary h-10"
+            className="btn-primary h-10 whitespace-nowrap"
             onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}
           >
             <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket

@@ -88,9 +88,10 @@ export function PeppolCheckLink({ siren, className }) {
       href={`https://peppolcheck.fr/0225:${siren}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={cx('btn-secondary', className)}
+      title="Vérifier sur PeppolCheck.fr (nouvel onglet)"
+      className={cx('btn-secondary whitespace-nowrap', className)}
     >
-      <ExternalLink className="size-4" /> Vérifier sur PeppolCheck.fr
+      PeppolCheck.fr <ExternalLink className="size-3.5 text-slate-400" />
     </a>
   );
 }
