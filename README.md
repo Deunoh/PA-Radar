@@ -61,6 +61,16 @@ Le front compilé (`dist/`) est servi directement par Cloudflare ; les routes `/
 `src/worker/index.js`, qui réutilise la même logique que le serveur Express (`src/server/api.js`).
 La configuration est dans `wrangler.jsonc`.
 
+**Le déploiement est automatique** (Cloudflare Workers Builds, relié au dépôt GitHub) :
+
+- chaque push sur `main` compile le front (`npm run build`) puis publie le site (`npx wrangler deploy`) ;
+- chaque autre branche est compilée et publiée en aperçu (`wrangler preview`, d'où le bloc `previews` de
+  `wrangler.jsonc`) ; le résultat s'affiche comme une vérification sur la pull request.
+
+Cloudflare ne lance pas les tests : pensez à `npm test` avant de fusionner.
+
+À la main, depuis un poste connecté au compte Cloudflare :
+
 ```bash
 npx wrangler login     # une fois : connexion au compte Cloudflare dans le navigateur
 npm run deploy         # compile le front puis publie sur https://paradar.<compte>.workers.dev
@@ -86,6 +96,10 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
    - des badges : inscrit sur Peppol, inscrit réforme FR, assujetti actif, certificat valide ou expiré ;
    - le détail technique, chaque valeur avec un bouton copier ;
    - les documents acceptés, les identifiants testés et le JSON brut, dans des sections repliables ;
+   - des boutons **« Vérifier sur »** vers les sites officiels, avec leur logo : PeppolCheck.fr (fiche du
+     SIREN), l'Annuaire des Entreprises (fiche de l'établissement si un SIRET a été saisi, sinon de
+     l'entreprise) et l'annuaire de la facturation électronique sur Chorus Pro. Ce dernier ne permet pas
+     d'ouvrir une fiche par son adresse : l'identifiant saisi est copié au clic, à coller dans sa recherche ;
    - le bouton **« Copier le résumé pour un ticket »**, par exemple :
 
      ```
@@ -107,6 +121,11 @@ temps réel. Si la limite de recherches par minute est atteinte, le lot attend p
 Un lot compte au maximum 500 identifiants.
 Le tableau se trie et se filtre par PA. L'export CSV utilise le point-virgule et l'UTF-8 avec BOM, pour
 qu'Excel l'ouvre directement. Un clic sur une ligne ouvre la fiche détaillée.
+
+### À propos
+
+L'onglet **À propos** explique l'intérêt de l'outil à quelqu'un qui le découvre : le contexte de la réforme,
+ce que fait PAradar, sa plus-value, son fonctionnement et ses limites.
 
 ### Réseau de test
 
