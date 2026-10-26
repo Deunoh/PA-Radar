@@ -1,15 +1,17 @@
 import { useCallback, useState } from 'react';
-import { Search, Layers } from 'lucide-react';
+import { Search, Layers, Info } from 'lucide-react';
 import { Header } from './components/layout/Header.jsx';
 import { Disclaimer } from './components/layout/Disclaimer.jsx';
 import { SearchView } from './components/search/SearchView.jsx';
 import { BatchView } from './components/batch/BatchView.jsx';
+import { AboutView } from './components/about/AboutView.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
 const TABS = [
   { id: 'search', label: 'Recherche', icon: Search },
   { id: 'batch', label: 'Recherche en lot', icon: Layers },
+  { id: 'about', label: 'À propos', icon: Info },
 ];
 
 export default function App() {
@@ -36,6 +38,9 @@ export default function App() {
         </div>
         <div hidden={tab !== 'batch'}>
           <BatchView sml={sml} onOpen={openInSearch} />
+        </div>
+        <div hidden={tab !== 'about'}>
+          <AboutView onStart={() => { setTab('search'); window.scrollTo({ top: 0 }); }} />
         </div>
       </main>
       <Disclaimer />

@@ -84,8 +84,8 @@ export function Collapsible({ title, icon: Icon, count, defaultOpen = false, act
  * Boutons vers les sites officiels de vérification, avec leur logo :
  *  - PeppolCheck.fr, qui n'a de page qu'au niveau du SIREN (0225:SIREN), pas de l'établissement ;
  *  - l'Annuaire des Entreprises, sur la fiche de l'établissement si un SIRET a été saisi ;
- *  - l'annuaire de la facturation électronique (Chorus Pro), qui n'accepte pas de SIREN dans
- *    l'adresse : le SIREN est copié au clic pour être collé dans sa recherche.
+ *  - l'annuaire de la facturation électronique (Chorus Pro), qui n'accepte pas d'identifiant dans
+ *    l'adresse : l'identifiant saisi (SIRET, sinon SIREN) est copié au clic pour être collé dans sa recherche.
  */
 export function VerificationLinks({ siren, siret }) {
   if (!siren) return null;
@@ -109,14 +109,36 @@ export function VerificationLinks({ siren, siret }) {
         href="https://facturation.chorus-pro.gouv.fr/annuaire"
         icon={chorusProIcon}
         label="Annuaire Chorus Pro"
-        title="Ouvrir l'annuaire de la facturation électronique (Chorus Pro) : le SIREN est copié, collez-le dans la recherche"
-        copyValue={siren}
+        title={`Ouvrir l'annuaire de la facturation électronique (Chorus Pro) : le ${siret ? 'SIRET' : 'SIREN'} est copié, collez-le dans la recherche`}
+        copyValue={siret || siren}
+        copyLabel={siret ? 'SIRET' : 'SIREN'}
       />
     </>
   );
 }
 
-function OfficialLink({ href, icon, label, title, copyValue }) {
+/** Les mêmes sites, sur leur page d'accueil (onglet « À propos »). */
+export function OfficialLinks() {
+  return (
+    <>
+      <OfficialLink href="https://peppolcheck.fr/" icon={peppolCheckIcon} label="PeppolCheck.fr" title="PeppolCheck.fr (nouvel onglet)" />
+      <OfficialLink
+        href="https://annuaire-entreprises.data.gouv.fr/"
+        icon={annuaireIcon}
+        label="Annuaire des Entreprises"
+        title="Annuaire des Entreprises (nouvel onglet)"
+      />
+      <OfficialLink
+        href="https://facturation.chorus-pro.gouv.fr/annuaire"
+        icon={chorusProIcon}
+        label="Annuaire Chorus Pro"
+        title="Annuaire de la facturation électronique, Chorus Pro (nouvel onglet)"
+      />
+    </>
+  );
+}
+
+function OfficialLink({ href, icon, label, title, copyValue, copyLabel }) {
   const copy = useCopy();
   return (
     <a
@@ -124,7 +146,7 @@ function OfficialLink({ href, icon, label, title, copyValue }) {
       target="_blank"
       rel="noopener noreferrer"
       title={title || `Vérifier sur ${label} (nouvel onglet)`}
-      onClick={copyValue ? () => copy(copyValue, `SIREN ${copyValue} copié : collez-le dans la recherche`) : undefined}
+      onClick={copyValue ? () => copy(copyValue, `${copyLabel} ${copyValue} copié : collez-le dans la recherche Chorus Pro`) : undefined}
       className="btn-secondary h-9 gap-2 whitespace-nowrap !pl-2"
     >
       <img src={icon} alt="" className="size-5 rounded-md bg-white ring-1 ring-slate-200 dark:ring-slate-700" />
