@@ -4,6 +4,8 @@ Outil interne de support technique : à partir d'un **SIRET** ou d'un **SIREN**,
 entreprise française est inscrite sur le réseau **Peppol** et **par quelle plateforme agréée (PA)** elle
 reçoit ses factures électroniques.
 
+**En ligne : <https://paradar.cstc.workers.dev>**
+
 > Le point d'accès Peppol indique l'opérateur technique qui reçoit les factures du client. C'est
 > généralement sa plateforme agréée, mais un sous-traitant est possible. **La source officielle reste
 > l'annuaire du PPF.**
@@ -63,7 +65,7 @@ La configuration est dans `wrangler.jsonc`.
 
 ```bash
 npx wrangler login     # une fois : connexion au compte Cloudflare dans le navigateur
-npm run deploy         # compile le front puis publie sur https://paradar.<compte>.workers.dev
+npm run deploy         # compile le front puis publie sur https://paradar.cstc.workers.dev
 npm run preview        # essai local avec le moteur de Cloudflare (http://localhost:8787)
 ```
 
