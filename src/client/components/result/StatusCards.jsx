@@ -2,6 +2,7 @@ import { SearchX, BookOpen, AlertTriangle, WifiOff, ServerCrash, Timer, ListChec
 import { buildTicketSummary } from '../../../shared/summary.js';
 import { useCopy } from '../../hooks/useCopy.js';
 import { CandidatesList } from './CandidatesList.jsx';
+import { VerificationLinks } from './primitives.jsx';
 
 /** Carte « aucune inscription trouvée » : ton neutre, causes possibles, renvoi vers le PPF. */
 export function NotFoundCard({ response }) {
@@ -48,6 +49,12 @@ export function NotFoundCard({ response }) {
             <h3 className="label mb-2 flex items-center gap-1.5"><ListChecks className="size-3.5" /> Identifiants testés</h3>
             <CandidatesList candidates={response.candidates} directory={response.directory} />
           </div>
+        </div>
+      </div>
+      <div className="border-t border-slate-100 px-6 py-3.5 dark:border-slate-800">
+        <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</p>
+        <div className="flex flex-wrap gap-2">
+          <VerificationLinks siren={response.siren} siret={response.siret} />
         </div>
       </div>
       <div className="flex justify-end border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 dark:border-slate-800 dark:bg-slate-900/40">

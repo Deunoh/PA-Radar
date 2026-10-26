@@ -19,7 +19,7 @@ import { formatIdentifier } from '../../../shared/identifiers.js';
 import { buildTicketSummary } from '../../../shared/summary.js';
 import { useCopy } from '../../hooks/useCopy.js';
 import { formatDate, formatDateTime, formatDuration, cx } from '../../utils/format.js';
-import { Badge, Collapsible, CopyButton } from './primitives.jsx';
+import { Badge, Collapsible, CopyButton, VerificationLinks } from './primitives.jsx';
 import { JsonViewer } from './JsonViewer.jsx';
 import { CandidatesList } from './CandidatesList.jsx';
 
@@ -231,6 +231,14 @@ export function ResultCard({ response, onRefresh, refreshing }) {
       >
         <JsonViewer data={response} />
       </Collapsible>
+
+      {/* ——— Vérification sur les sites officiels ——— */}
+      <div className="border-t border-slate-100 px-5 py-3.5 sm:px-7 dark:border-slate-800">
+        <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</p>
+        <div className="flex flex-wrap gap-2">
+          <VerificationLinks siren={response.siren} siret={response.siret} />
+        </div>
+      </div>
 
       {/* ——— Pied : méta + action principale ——— */}
       <div className="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 dark:border-slate-800 dark:bg-slate-900/40">
