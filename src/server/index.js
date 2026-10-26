@@ -1,38 +1,30 @@
 /**
- * Serveur Express de PAradar.
+ * Serveur Express de PAradar (en local ; en ligne, c'est le Worker Cloudflare de src/worker/).
  * - En développement : sert uniquement l'API (/api), Vite sert le front et redirige /api ici.
  * - En production (npm run build puis npm start) : sert aussi le front compilé (dist/).
  */
 import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs';
-import { config, SUPPORTED_SMLS } from './config.js';
+import { fileURLToPath } from 'node:url';
+import { config } from './config.js';
 import { LookupError } from './errors.js';
-import { getDefaultSource, sources } from './sources/index.js';
-import { LookupService } from './services/lookupService.js';
-import { createLookupRouter } from './routes/lookup.js';
+import { getConfig, lookup, toErrorResponse } from './api.js';
 
-const lookupService = new LookupService({ source: getDefaultSource() });
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', config.trustProxy);
-app.use(express.json({ limit: '1mb' }));
 
-// Informations de configuration utiles au front
-app.get('/api/config', (_req, res) => {
-  res.json({
-    defaultSml: config.defaultSml,
-    smls: SUPPORTED_SMLS,
-    cacheTtlMinutes: config.cacheTtlMs / 60_000,
-    rateLimitPerMinute: config.rateLimitPerMinute,
-    batchPauseMs: config.batchPauseMs,
-    helgerMinIntervalMs: config.helgerMinIntervalMs,
-    sources: Object.values(sources).map((s) => ({ id: s.id, label: s.label, available: s.isAvailable() })),
-  });
+app.get('/api/config', (_req, res) => res.json(getConfig()));
+app.get('/api/lookup', async (req, res, next) => {
+  try {
+    res.json(await lookup(new URL(req.originalUrl, 'http://localhost').searchParams, req.ip));
+  } catch (err) {
+    next(err);
+  }
 });
-
-app.use('/api', createLookupRouter(lookupService));
 
 app.use('/api', (_req, _res, next) => next(new LookupError('BAD_REQUEST', 'Route API inconnue')));
 
@@ -42,7 +34,7 @@ app.use('/api', (_req, _res, next) => next(new LookupError('BAD_REQUEST', 'Route
 //  - sinon           : page d'aide expliquant comment obtenir l'interface
 const isDev = process.argv.includes('--dev');
 const VITE_URL = 'http://localhost:5173';
-const distDir = path.join(config.rootDir, 'dist');
+const distDir = path.join(rootDir, 'dist');
 const hasDist = fs.existsSync(path.join(distDir, 'index.html'));
 
 if (isDev) {
@@ -66,12 +58,8 @@ if (isDev) {
 // Gestion centralisée des erreurs → JSON { error: { code, message } }
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
-  if (err instanceof LookupError) return res.status(err.status).json(err.toJSON());
-  if (err?.type === 'entity.parse.failed') {
-    return res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'Corps JSON invalide' } });
-  }
-  console.error('[erreur]', err);
-  res.status(500).json({ error: { code: 'INTERNAL', message: 'Erreur interne du serveur' } });
+  const { status, body, headers } = toErrorResponse(err);
+  res.status(status).set(headers).json(body);
 });
 
 app.listen(config.port, () => {

@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import { Upload, Play, Square, Download, Eraser, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { splitIdentifierList, validateIdentifier } from '../../../shared/identifiers.js';
-import { lookupBatch } from '../../api.js';
+import { lookup } from '../../api.js';
+import { toBatchItem } from '../../../shared/batch.js';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLocalStorage } from '../../hooks/useLocalStorage.js';
 import { toCsv, downloadCsv, extractIdentifiersFromCsv } from '../../utils/csv.js';
@@ -11,7 +12,34 @@ import { BatchTable } from './BatchTable.jsx';
 
 /** Durée estimée d'une recherche non mise en cache (≈ 5 appels espacés de 1,2 s + pause d'1 s). */
 const ESTIMATED_MS_PER_ITEM = 6500;
+/** Pause entre deux identifiants, pour ne pas surcharger les SMP. */
+const PAUSE_MS = 1000;
+const MAX_ITEMS = 500;
 const STATUS_LABELS = { found: 'Trouvé', not_found: 'Non inscrit', error: 'Erreur', invalid: 'Invalide' };
+
+const sleep = (ms, signal) =>
+  new Promise((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    signal.addEventListener('abort', () => {
+      clearTimeout(timer);
+      reject(new DOMException('Interrompu', 'AbortError'));
+    }, { once: true });
+  });
+
+/**
+ * Recherche d'un identifiant du lot. Si la limite de recherches par minute est atteinte,
+ * attend le délai indiqué par le serveur puis réessaie.
+ */
+async function lookupBatchItem(id, sml, signal) {
+  for (;;) {
+    try {
+      return toBatchItem(id, await lookup(id, { sml, raw: false, signal }));
+    } catch (err) {
+      if (err.code !== 'RATE_LIMITED') throw err;
+      await sleep((err.details?.retryAfter || 5) * 1000, signal);
+    }
+  }
+}
 
 /**
  * Onglet « Recherche en lot ».
@@ -54,6 +82,10 @@ export function BatchView({ sml, onOpen }) {
 
   const start = async () => {
     if (!parsed.ids.length) return;
+    if (parsed.ids.length > MAX_ITEMS) {
+      setError(`Maximum ${MAX_ITEMS} identifiants par lot (${parsed.ids.length} saisis).`);
+      return;
+    }
     const controller = new AbortController();
     abortRef.current = controller;
     setRunning(true);
@@ -62,24 +94,33 @@ export function BatchView({ sml, onOpen }) {
     setPaFilter('');
     setProgress({ done: 0, total: parsed.ids.length, elapsedMs: 0, processedValid: 0, totalValid: parsed.valid });
 
+    const started = Date.now();
     try {
-      await lookupBatch(parsed.ids, {
-        sml,
-        signal: controller.signal,
-        onEvent: (event, data) => {
-          if (event === 'progress') {
-            setItems((list) => [...list, data.item]);
-            setProgress((p) => ({
-              ...p,
-              done: data.done,
-              elapsedMs: data.elapsedMs,
-              processedValid: p.processedValid + (data.item.status === 'invalid' ? 0 : 1),
-            }));
-          } else if (event === 'done') {
-            toast('Recherche en lot terminée');
+      let processedValid = 0;
+      for (const [index, raw] of parsed.ids.entries()) {
+        const validation = validateIdentifier(raw);
+        let item;
+        if (!validation.valid) {
+          item = { id: raw, status: 'invalid', error: validation.error };
+        } else {
+          if (processedValid > 0) await sleep(PAUSE_MS, controller.signal);
+          try {
+            item = await lookupBatchItem(validation.cleaned, sml, controller.signal);
+          } catch (err) {
+            if (err.name === 'AbortError') throw err;
+            item = { id: validation.cleaned, status: 'error', error: err.message, errorCode: err.code || 'ERROR' };
           }
-        },
-      });
+          processedValid++;
+        }
+        setItems((list) => [...list, item]);
+        setProgress((p) => ({
+          ...p,
+          done: index + 1,
+          elapsedMs: Date.now() - started,
+          processedValid: p.processedValid + (item.status === 'invalid' ? 0 : 1),
+        }));
+      }
+      toast('Recherche en lot terminée');
     } catch (err) {
       if (err.name === 'AbortError') toast('Recherche en lot interrompue', { tone: 'error' });
       else setError(err.message);
