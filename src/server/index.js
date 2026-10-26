@@ -16,7 +16,7 @@ const lookupService = new LookupService({ source: getDefaultSource() });
 
 const app = express();
 app.disable('x-powered-by');
-app.set('trust proxy', 'loopback');
+app.set('trust proxy', config.trustProxy);
 app.use(express.json({ limit: '1mb' }));
 
 // Informations de configuration utiles au front

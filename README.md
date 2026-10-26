@@ -54,6 +54,16 @@ Il existe deux façons de lancer l'outil :
 | `HELGER_MIN_INTERVAL_MS` | `1200`                           | Espacement minimal entre deux appels à l'API Helger   |
 | `BATCH_PAUSE_MS`         | `1000`                           | Pause entre deux identifiants d'une recherche en lot  |
 | `BATCH_MAX_ITEMS`        | `500`                            | Nombre maximum d'identifiants par lot                 |
+| `TRUST_PROXY`            | `loopback`                       | Proxys de confiance pour l'IP du client (`true` sur Render) |
+
+### Déploiement sur Render
+
+Le fichier `render.yaml` décrit le service. Sur <https://dashboard.render.com> : **New + → Blueprint**, choisir
+le dépôt, puis valider. Render compile le front (`npm ci && npm run build`), lance `npm start` et redéploie
+à chaque push sur `main`.
+
+Sur l'offre gratuite, le service s'endort après 15 minutes sans visite : la première recherche qui suit
+attend son réveil (30 s à 1 min environ). Le cache est alors vidé.
 
 ---
 
