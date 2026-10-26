@@ -53,7 +53,8 @@ export class HelgerSource extends PeppolSource {
     timeoutMs = config.externalTimeoutMs,
     minIntervalMs = config.helgerMinIntervalMs,
     directoryMinIntervalMs = 300,
-    fetchImpl = globalThis.fetch,
+    // Appel via une fonction : Cloudflare Workers refuse un fetch appelé comme méthode d'un autre objet
+    fetchImpl = (...args) => globalThis.fetch(...args),
   } = {}) {
     super();
     this.baseUrl = baseUrl;

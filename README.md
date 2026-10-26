@@ -52,18 +52,24 @@ Il existe deux façons de lancer l'outil :
 | `DIRECTORY_URL_PROD`     | `https://directory.peppol.eu`    | Annuaire Peppol (réseau de production)                |
 | `DIRECTORY_URL_TEST`     | `https://test-directory.peppol.eu` | Annuaire Peppol (réseau de test)                    |
 | `HELGER_MIN_INTERVAL_MS` | `1200`                           | Espacement minimal entre deux appels à l'API Helger   |
-| `BATCH_PAUSE_MS`         | `1000`                           | Pause entre deux identifiants d'une recherche en lot  |
-| `BATCH_MAX_ITEMS`        | `500`                            | Nombre maximum d'identifiants par lot                 |
-| `TRUST_PROXY`            | `loopback`                       | Proxys de confiance pour l'IP du client (`true` sur Render) |
+| `TRUST_PROXY`            | `loopback`                       | Proxys de confiance pour l'IP du client, si Express tourne derrière un proxy |
 
-### Déploiement sur Render
+### Déploiement sur Cloudflare Workers
 
-Le fichier `render.yaml` décrit le service. Sur <https://dashboard.render.com> : **New + → Blueprint**, choisir
-le dépôt, puis valider. Render compile le front (`npm ci && npm run build`), lance `npm start` et redéploie
-à chaque push sur `main`.
+En ligne, PAradar tourne sur Cloudflare Workers (offre gratuite, sans carte bancaire ni mise en veille).
+Le front compilé (`dist/`) est servi directement par Cloudflare ; les routes `/api` passent par
+`src/worker/index.js`, qui réutilise la même logique que le serveur Express (`src/server/api.js`).
+La configuration est dans `wrangler.jsonc`.
 
-Sur l'offre gratuite, le service s'endort après 15 minutes sans visite : la première recherche qui suit
-attend son réveil (30 s à 1 min environ). Le cache est alors vidé.
+```bash
+npx wrangler login     # une fois : connexion au compte Cloudflare dans le navigateur
+npm run deploy         # compile le front puis publie sur https://paradar.<compte>.workers.dev
+npm run preview        # essai local avec le moteur de Cloudflare (http://localhost:8787)
+```
+
+Les variables d'environnement ci-dessus peuvent être définies dans le tableau de bord Cloudflare
+(Worker → Settings → Variables). Le cache et la limite de recherches restent en mémoire : Cloudflare
+pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entre elles.
 
 ---
 
@@ -96,7 +102,9 @@ la recherche sans passer par le cache.
 
 Collez une liste d'identifiants : un par ligne, ou séparés par virgule, point-virgule ou espace. Vous pouvez
 aussi importer un CSV : tous les SIREN et SIRET qu'il contient sont extraits. Les recherches sont faites une
-par une, avec une pause entre chaque, et la progression s'affiche en temps réel (Server-Sent Events).
+par une depuis le navigateur, avec une pause d'une seconde entre chaque, et la progression s'affiche en
+temps réel. Si la limite de recherches par minute est atteinte, le lot attend puis reprend tout seul.
+Un lot compte au maximum 500 identifiants.
 Le tableau se trie et se filtre par PA. L'export CSV utilise le point-virgule et l'UTF-8 avec BOM, pour
 qu'Excel l'ouvre directement. Un clic sur une ligne ouvre la fiche détaillée.
 
@@ -155,7 +163,7 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
 | Route                                    | Description                                                  |
 | ---------------------------------------- | ------------------------------------------------------------ |
 | `GET /api/lookup?id=…&sml=…&refresh=1`   | Recherche unitaire (JSON normalisé + réponses brutes)        |
-| `POST /api/lookup/batch` `{ ids, sml }`  | Recherche en lot, progression en `text/event-stream`         |
+| `GET /api/lookup?id=…&raw=0`             | Idem sans les réponses brutes (utilisé par la recherche en lot) |
 | `GET /api/config`                        | Configuration utile au front                                 |
 
 ---
@@ -163,11 +171,12 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
 ## Organisation du code
 
 ```
-src/shared/                     code partagé front/back (identifiants, résumé pour ticket)
+src/shared/                     code partagé front/back (identifiants, résumé pour ticket, ligne de lot)
+src/worker/index.js             point d'entrée Cloudflare Workers (en ligne)
 src/server/
-  index.js                      serveur Express
+  index.js                      serveur Express (en local)
+  api.js                        logique des routes /api, commune à Express et au Worker
   config.js · errors.js         configuration, erreurs typées
-  routes/                       /api/lookup, /api/lookup/batch
   services/                     orchestration, cache, construction du résultat, hébergeur
   parsing/helgerParser.js       lecture des JSON de l'API Helger (fonctions pures)
   sources/
@@ -228,4 +237,4 @@ Les tests couvrent :
 - **Déduction de l'hébergeur** : elle repose sur une liste de domaines connus (`hostDetection.js`), à
   compléter au besoin.
 - Le cache et la limite de débit sont **en mémoire** : ils sont remis à zéro au redémarrage et ne sont pas
-  partagés entre plusieurs instances.
+  partagés entre plusieurs instances (ni entre les copies du Worker Cloudflare).

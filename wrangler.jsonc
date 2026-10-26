@@ -1,0 +1,15 @@
+// Déploiement sur Cloudflare Workers : `npm run deploy` (compile le front puis publie).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "paradar",
+  "main": "src/worker/index.js",
+  "compatibility_date": "2026-10-01",
+  // process.env (lu par src/server/config.js) est fourni par la compatibilité Node
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": { "enabled": true }
+}
