@@ -19,7 +19,7 @@ import { formatIdentifier } from '../../../shared/identifiers.js';
 import { buildTicketSummary } from '../../../shared/summary.js';
 import { useCopy } from '../../hooks/useCopy.js';
 import { formatDate, formatDateTime, formatDuration, cx } from '../../utils/format.js';
-import { Badge, Collapsible, CopyButton } from './primitives.jsx';
+import { Badge, Collapsible, CopyButton, PeppolCheckLink } from './primitives.jsx';
 import { JsonViewer } from './JsonViewer.jsx';
 import { CandidatesList } from './CandidatesList.jsx';
 
@@ -241,13 +241,16 @@ export function ResultCard({ response, onRefresh, refreshing }) {
           </span>
           {response.sml !== 'peppolprod' && <span className="font-mono">{response.sml}</span>}
         </p>
-        <button
-          type="button"
-          className="btn-primary h-10"
-          onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}
-        >
-          <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <PeppolCheckLink siren={response.siren} className="h-10" />
+          <button
+            type="button"
+            className="btn-primary h-10"
+            onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}
+          >
+            <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket
+          </button>
+        </div>
       </div>
     </article>
   );

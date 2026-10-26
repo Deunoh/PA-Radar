@@ -1,8 +1,8 @@
 /**
- * Petits composants réutilisables : bouton copier, badge, section repliable.
+ * Petits composants réutilisables : bouton copier, badge, section repliable, lien PeppolCheck.fr.
  */
 import { useState } from 'react';
-import { Check, Copy, ChevronRight } from 'lucide-react';
+import { Check, Copy, ChevronRight, ExternalLink } from 'lucide-react';
 import { useCopy } from '../../hooks/useCopy.js';
 import { cx } from '../../utils/format.js';
 
@@ -74,5 +74,23 @@ export function Collapsible({ title, icon: Icon, count, defaultOpen = false, act
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Ouvre la fiche de l'entreprise sur PeppolCheck.fr, pour la vérification demandée.
+ * PeppolCheck.fr n'a de page qu'au niveau du SIREN (0225:SIREN), pas de l'établissement.
+ */
+export function PeppolCheckLink({ siren, className }) {
+  if (!siren) return null;
+  return (
+    <a
+      href={`https://peppolcheck.fr/0225:${siren}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cx('btn-secondary', className)}
+    >
+      <ExternalLink className="size-4" /> Vérifier sur PeppolCheck.fr
+    </a>
   );
 }
