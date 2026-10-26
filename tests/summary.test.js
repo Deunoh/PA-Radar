@@ -16,7 +16,7 @@ describe('buildTicketSummary', () => {
         companyName: "EARL BISONS D'AUVERGNE",
         participantShortId: '0225:750620585',
         frenchReform: { regulated: true, nonRegulated: true },
-        pa: { name: 'Cecurity', popId: 'POP000717', operator: 'Cecurity.com SA' },
+        pa: { name: 'Cecurity.com SA', popId: 'POP000717', operator: 'Cecurity.com SA' },
         whiteLabel: true,
         technicalHost: 'Tickstar',
       },
@@ -25,7 +25,7 @@ describe('buildTicketSummary', () => {
       [
         "SIRET 75062058500018 – EARL BISONS D'AUVERGNE",
         'Peppol : oui (0225:750620585) – Réforme FR : oui',
-        "PA : Cecurity (POP000717) – Point d'accès marque blanche hébergé chez Tickstar",
+        "PA : Cecurity.com SA (POP000717) – Point d'accès marque blanche hébergé chez Tickstar",
         'Vérifié le 25/09/2026 via SMP Peppol',
       ].join('\n'),
     );

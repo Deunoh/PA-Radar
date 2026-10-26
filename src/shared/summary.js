@@ -40,8 +40,6 @@ export function buildTicketSummary(response) {
   let paLine = `PA : ${result.pa.name || 'inconnue'}${result.pa.popId ? ` (${result.pa.popId})` : ''}`;
   if (result.whiteLabel && result.technicalHost) {
     paLine += ` – Point d'accès marque blanche hébergé chez ${result.technicalHost}`;
-  } else if (result.pa.operator && result.pa.operator !== result.pa.name) {
-    paLine += ` – Exploitant du point d'accès : ${result.pa.operator}`;
   }
   lines.push(paLine, checked);
   return lines.join('\n');

@@ -14,9 +14,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * Onglet « Recherche » : barre de commande, étapes animées, carte résultat, historique.
- * @param {{ sml: string, pendingId: string|null, onPendingConsumed: () => void, onKnownChanged: () => void }} props
+ * @param {{ sml: string, pendingId: string|null, onPendingConsumed: () => void }} props
  */
-export function SearchView({ sml, pendingId, onPendingConsumed, onKnownChanged }) {
+export function SearchView({ sml, pendingId, onPendingConsumed }) {
   const inputRef = useRef(null);
   const abortRef = useRef(null);
   const [query, setQuery] = useState('');
@@ -131,10 +131,6 @@ export function SearchView({ sml, pendingId, onPendingConsumed, onKnownChanged }
             response={response}
             refreshing={refreshing}
             onRefresh={() => run(lastId, { refresh: true })}
-            onKnownSaved={() => {
-              onKnownChanged();
-              run(lastId, { keepCard: true }); // réponse en cache côté serveur, ré-enrichie
-            }}
           />
         ) : (
           <NotFoundCard key={response.queriedAt} response={response} />

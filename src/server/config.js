@@ -10,6 +10,13 @@ const int = (value, fallback) => {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 };
 
+const parseTrustProxy = (value) => {
+  if (!value) return 'loopback';
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return /^\d+$/.test(value) ? Number(value) : value;
+};
+
 export const SUPPORTED_SMLS = ['peppolprod', 'peppoltest'];
 
 export const config = {
@@ -29,5 +36,7 @@ export const config = {
   helgerMinIntervalMs: int(process.env.HELGER_MIN_INTERVAL_MS, 1200),
   batchPauseMs: int(process.env.BATCH_PAUSE_MS, 1000),
   batchMaxItems: int(process.env.BATCH_MAX_ITEMS, 500),
-  knownAccessPointsFile: path.join(rootDir, 'data', 'known-access-points.json'),
+  // Proxys de confiance pour lire l'IP du client (X-Forwarded-For) : « true » derrière un hébergeur
+  // comme Render, sinon seul un proxy local est cru (valeurs acceptées par Express « trust proxy »)
+  trustProxy: parseTrustProxy(process.env.TRUST_PROXY),
 };

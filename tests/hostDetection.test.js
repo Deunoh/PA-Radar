@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { isWhiteLabel, registrableDomain, detectTechnicalHost } from '../src/server/services/hostDetection.js';
-import { normalizeCompanyName, matchKnownAccessPoint } from '../src/server/services/knownAccessPoints.js';
 
 describe('hostDetection', () => {
   it('reconnaît les variantes de « white label »', () => {
@@ -27,21 +26,5 @@ describe('hostDetection', () => {
   });
   it('utilise le domaine brut si l\'hébergeur est inconnu', () => {
     expect(detectTechnicalHost({ serviceDescription: 'White label', endpointUrl: 'https://as4.inconnu.fr/x' }).name).toBe('inconnu.fr');
-  });
-});
-
-describe('table de correspondance', () => {
-  it('normalise les noms de société', () => {
-    expect(normalizeCompanyName('Cecurity.com SA')).toBe('cecurity');
-    expect(normalizeCompanyName('Société Générale SAS')).toBe('societe generale');
-  });
-  it('priorité à l\'ID POP, puis au nom d\'exploitant', () => {
-    const table = {
-      POP000717: { pa: 'Cecurity' },
-      POP000001: { pa: 'Autre PA', operator: 'Pagero AB' },
-    };
-    expect(matchKnownAccessPoint(table, { popId: 'pop000717', operator: 'X' })?.matchedBy).toBe('popId');
-    expect(matchKnownAccessPoint(table, { popId: 'POP123456', operator: 'Pagero AB' })).toMatchObject({ pa: 'Autre PA', matchedBy: 'operator' });
-    expect(matchKnownAccessPoint(table, { popId: 'POP123456', operator: 'Inconnu SA' })).toBeNull();
   });
 });

@@ -9,7 +9,6 @@ import {
 } from '../parsing/helgerParser.js';
 import { detectTechnicalHost } from './hostDetection.js';
 import { describeFrenchAddressing } from '../../shared/identifiers.js';
-import { matchKnownAccessPoint } from './knownAccessPoints.js';
 
 /**
  * Choisit le point d'accès principal parmi les endpoints dédupliqués :
@@ -26,7 +25,7 @@ export function pickPrimaryEndpoint(endpoints) {
 }
 
 /**
- * Construit l'objet `result` (sans l'enrichissement par la table de correspondance).
+ * Construit l'objet `result`.
  *
  * @param {Object} input
  * @param {{ shortId: string, participantId: string, scheme: string, value?: string, origin?: string }} input.candidate
@@ -68,13 +67,9 @@ export function buildResult({ candidate, smpHostUri, serviceGroup, referenceDocu
     hasBusinessCard: Boolean(bc),
 
     pa: {
-      name: cert.operator || null, // remplacé par le nom connu lors de l'enrichissement
+      name: cert.operator || null,
       popId: cert.popId || null,
       operator: cert.operator || null,
-      knownName: null,
-      note: null,
-      isKnown: false,
-      matchedBy: null,
     },
 
     technicalHost: host.name,
@@ -117,28 +112,5 @@ export function buildResult({ candidate, smpHostUri, serviceGroup, referenceDocu
       processes: e.processIds,
       serial: e.certificate.serial,
     })),
-  };
-}
-
-/**
- * Enrichit un résultat avec la table de correspondance des points d'accès connus.
- * Renvoie une copie : le résultat en cache n'est jamais modifié, ce qui permet
- * de prendre en compte immédiatement une nouvelle entrée ajoutée à la table.
- * @param {ReturnType<typeof buildResult> | null} result
- * @param {Record<string, any>} table
- */
-export function applyKnownAccessPoint(result, table) {
-  if (!result) return null;
-  const match = matchKnownAccessPoint(table, { popId: result.pa.popId, operator: result.pa.operator });
-  return {
-    ...result,
-    pa: {
-      ...result.pa,
-      name: match?.pa || result.pa.operator,
-      knownName: match?.pa || null,
-      note: match?.note || null,
-      isKnown: Boolean(match),
-      matchedBy: match?.matchedBy || null,
-    },
   };
 }

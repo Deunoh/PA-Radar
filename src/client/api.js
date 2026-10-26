@@ -83,15 +83,3 @@ export async function lookupBatch(ids, { sml, signal, onEvent }) {
     }
   }
 }
-
-export const getKnownAccessPoints = () => request('/api/known-access-points');
-
-export const saveKnownAccessPoint = (entry) =>
-  request('/api/known-access-points', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry),
-  });
-
-export const deleteKnownAccessPoint = (popId) =>
-  request(`/api/known-access-points/${encodeURIComponent(popId)}`, { method: 'DELETE' });

@@ -32,12 +32,10 @@ class FakeSource extends PeppolSource {
   }
 }
 
-const store = (table = { POP000717: { pa: 'Cecurity', note: 'eFacture (ISAGRI)' } }) => ({ load: async () => table });
-
 describe('LookupService', () => {
   it('résout le cas réel de bout en bout', async () => {
     const source = new FakeSource();
-    const service = new LookupService({ source, knownAccessPoints: store(), cacheTtlMs: 60_000 });
+    const service = new LookupService({ source, cacheTtlMs: 60_000 });
     const res = await service.lookup('750 620 585 00018');
 
     expect(res.siren).toBe('750620585');
@@ -49,7 +47,7 @@ describe('LookupService', () => {
     ]);
     expect(res.result).toMatchObject({
       companyName: "EARL BISONS D'AUVERGNE",
-      pa: { name: 'Cecurity', popId: 'POP000717', operator: 'Cecurity.com SA', isKnown: true },
+      pa: { name: 'Cecurity.com SA', popId: 'POP000717', operator: 'Cecurity.com SA' },
       technicalHost: 'Tickstar',
       frenchReform: { regulated: true, nonRegulated: true },
     });
@@ -76,7 +74,7 @@ describe('LookupService', () => {
         return { participants: parseDirectorySearch(json, siren), total: 1, raw: json };
       }
     }
-    const service = new LookupService({ source: new DirectorySource(), knownAccessPoints: store() });
+    const service = new LookupService({ source: new DirectorySource() });
     const res = await service.lookup('923409346');
     expect(res.directory).toMatchObject({ searched: true, ok: true, found: 1 });
     expect(res.candidates.map((c) => [c.shortId, c.exists, c.origin])).toEqual([
@@ -98,21 +96,21 @@ describe('LookupService', () => {
         throw new Error('Annuaire Peppol injoignable');
       }
     }
-    const service = new LookupService({ source: new BrokenDirectory(), knownAccessPoints: store() });
+    const service = new LookupService({ source: new BrokenDirectory() });
     const res = await service.lookup('750620585');
     expect(res.result?.pa.popId).toBe('POP000717');
     expect(res.directory).toMatchObject({ ok: false, error: 'Annuaire Peppol injoignable' });
   });
 
   it('renvoie result: null quand aucun candidat n\'existe', async () => {
-    const service = new LookupService({ source: new FakeSource(), knownAccessPoints: store() });
+    const service = new LookupService({ source: new FakeSource() });
     const res = await service.lookup('732829320');
     expect(res.result).toBeNull();
     expect(res.candidates).toHaveLength(2);
   });
 
   it('rejette un identifiant invalide avec un message clair', async () => {
-    const service = new LookupService({ source: new FakeSource(), knownAccessPoints: store() });
+    const service = new LookupService({ source: new FakeSource() });
     await expect(service.lookup('75062058500019')).rejects.toMatchObject({ code: 'INVALID_ID', message: 'Clé de contrôle invalide' });
   });
 });

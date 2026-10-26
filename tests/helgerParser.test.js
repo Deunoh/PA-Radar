@@ -13,7 +13,7 @@ import {
   detectFrenchReform,
   isCertificateValid,
 } from '../src/server/parsing/helgerParser.js';
-import { buildResult, applyKnownAccessPoint } from '../src/server/services/resultBuilder.js';
+import { buildResult } from '../src/server/services/resultBuilder.js';
 
 const load = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'));
 const existence = load('existence-0225.json');
@@ -160,20 +160,4 @@ describe('buildResult + table de correspondance (cas réel complet)', () => {
     expect(result.documentTypes.some((d) => d.isFrench)).toBe(true);
   });
 
-  it('enrichit avec la table par ID POP', () => {
-    const table = { POP000717: { pa: 'Cecurity', note: 'eFacture (ISAGRI)' } };
-    const enriched = applyKnownAccessPoint(result, table);
-    expect(enriched.pa).toMatchObject({ name: 'Cecurity', knownName: 'Cecurity', note: 'eFacture (ISAGRI)', isKnown: true, matchedBy: 'popId' });
-    // le résultat d'origine (en cache) n'est pas modifié
-    expect(result.pa.knownName).toBeNull();
-  });
-
-  it('enrichit par nom d\'exploitant (O=) à défaut d\'ID POP', () => {
-    const table = { POP999999: { pa: 'Cecurity', note: '' } };
-    expect(applyKnownAccessPoint(result, table).pa).toMatchObject({ name: 'Cecurity', matchedBy: 'operator' });
-  });
-
-  it('garde le O= du certificat si le point d\'accès est inconnu', () => {
-    expect(applyKnownAccessPoint(result, {}).pa).toMatchObject({ name: 'Cecurity.com SA', isKnown: false, knownName: null });
-  });
 });
