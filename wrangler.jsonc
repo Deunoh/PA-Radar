@@ -11,5 +11,7 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Aperçus de branche : Cloudflare publie chaque branche autre que main sur une adresse à part
+  "previews": {}
 }
