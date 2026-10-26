@@ -233,9 +233,11 @@ export function ResultCard({ response, onRefresh, refreshing }) {
       </Collapsible>
 
       {/* ——— Vérification sur les sites officiels ——— */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-5 py-3 sm:px-7 dark:border-slate-800">
-        <span className="mr-1 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</span>
-        <VerificationLinks siren={response.siren} siret={response.siret} />
+      <div className="border-t border-slate-100 px-5 py-3.5 sm:px-7 dark:border-slate-800">
+        <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</p>
+        <div className="flex flex-wrap gap-2">
+          <VerificationLinks siren={response.siren} siret={response.siret} />
+        </div>
       </div>
 
       {/* ——— Pied : méta + action principale ——— */}

@@ -51,10 +51,14 @@ export function NotFoundCard({ response }) {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 dark:border-slate-800 dark:bg-slate-900/40">
-        <span className="mr-1 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</span>
-        <VerificationLinks siren={response.siren} siret={response.siret} />
-        <button type="button" className="btn-secondary sm:ml-auto" onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}>
+      <div className="border-t border-slate-100 px-6 py-3.5 dark:border-slate-800">
+        <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</p>
+        <div className="flex flex-wrap gap-2">
+          <VerificationLinks siren={response.siren} siret={response.siret} />
+        </div>
+      </div>
+      <div className="flex justify-end border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 dark:border-slate-800 dark:bg-slate-900/40">
+        <button type="button" className="btn-secondary" onClick={() => copy(buildTicketSummary(response), 'Résumé copié pour le ticket')}>
           <ClipboardCopy className="size-4" /> Copier le résumé pour un ticket
         </button>
       </div>

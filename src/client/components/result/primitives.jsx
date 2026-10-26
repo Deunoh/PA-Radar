@@ -7,6 +7,7 @@ import { useCopy } from '../../hooks/useCopy.js';
 import { cx } from '../../utils/format.js';
 import peppolCheckIcon from '../../assets/peppolcheck.svg';
 import annuaireIcon from '../../assets/annuaire-entreprises.svg';
+import chorusProIcon from '../../assets/chorus-pro.png';
 
 export function CopyButton({ value, label = 'Copier', message, className }) {
   const copy = useCopy();
@@ -82,7 +83,9 @@ export function Collapsible({ title, icon: Icon, count, defaultOpen = false, act
 /**
  * Boutons vers les sites officiels de vérification, avec leur logo :
  *  - PeppolCheck.fr, qui n'a de page qu'au niveau du SIREN (0225:SIREN), pas de l'établissement ;
- *  - l'Annuaire des Entreprises, sur la fiche de l'établissement si un SIRET a été saisi.
+ *  - l'Annuaire des Entreprises, sur la fiche de l'établissement si un SIRET a été saisi ;
+ *  - l'annuaire de la facturation électronique (Chorus Pro), qui n'accepte pas de SIREN dans
+ *    l'adresse : le SIREN est copié au clic pour être collé dans sa recherche.
  */
 export function VerificationLinks({ siren, siret }) {
   if (!siren) return null;
@@ -102,17 +105,26 @@ export function VerificationLinks({ siren, siret }) {
         icon={annuaireIcon}
         label="Annuaire des Entreprises"
       />
+      <OfficialLink
+        href="https://facturation.chorus-pro.gouv.fr/annuaire"
+        icon={chorusProIcon}
+        label="Annuaire Chorus Pro"
+        title="Ouvrir l'annuaire de la facturation électronique (Chorus Pro) : le SIREN est copié, collez-le dans la recherche"
+        copyValue={siren}
+      />
     </>
   );
 }
 
-function OfficialLink({ href, icon, label }) {
+function OfficialLink({ href, icon, label, title, copyValue }) {
+  const copy = useCopy();
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      title={`Vérifier sur ${label} (nouvel onglet)`}
+      title={title || `Vérifier sur ${label} (nouvel onglet)`}
+      onClick={copyValue ? () => copy(copyValue, `SIREN ${copyValue} copié : collez-le dans la recherche`) : undefined}
       className="btn-secondary h-9 gap-2 whitespace-nowrap !pl-2"
     >
       <img src={icon} alt="" className="size-5 rounded-md bg-white ring-1 ring-slate-200 dark:ring-slate-700" />
