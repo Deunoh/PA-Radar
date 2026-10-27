@@ -137,7 +137,14 @@ export function SearchView({ sml, pendingId, onPendingConsumed }) {
         )
       )}
 
-      {phase === 'error' && error && <ErrorCard error={error} onRetry={() => run(lastId)} />}
+      {phase === 'error' && error && (
+        <ErrorCard
+          error={error}
+          onRetry={() => run(lastId)}
+          siren={validateIdentifier(lastId).siren}
+          siret={validateIdentifier(lastId).siret}
+        />
+      )}
 
       {!loading && <History items={history} onSelect={selectFromHistory} onClear={() => setHistory([])} />}
     </div>

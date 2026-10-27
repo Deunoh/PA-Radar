@@ -75,8 +75,11 @@ const ERROR_PRESENTATION = {
   NETWORK: { icon: WifiOff, title: 'Serveur injoignable' },
 };
 
-/** Carte d'erreur : un titre et une icône distincts par type d'erreur. */
-export function ErrorCard({ error, onRetry }) {
+/**
+ * Carte d'erreur : un titre et une icône distincts par type d'erreur.
+ * Si l'identifiant est valide, propose de vérifier sur les sites officiels (utile quand l'API Peppol est en panne).
+ */
+export function ErrorCard({ error, onRetry, siren, siret }) {
   const p = ERROR_PRESENTATION[error.code] || { icon: AlertTriangle, title: 'Erreur' };
   const Icon = p.icon;
   const candidates = error.details?.candidates;
@@ -93,6 +96,16 @@ export function ErrorCard({ error, onRetry }) {
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
               Le client est bien enregistré sur Peppol, mais le serveur de métadonnées (SMP) de son opérateur n'a pas répondu.
             </p>
+          )}
+          {siren && error.code !== 'INVALID_ID' && (
+            <>
+              <p className="mt-4 mb-2 text-xs text-slate-500 dark:text-slate-400">
+                {error.code === 'API_UNAVAILABLE' ? 'En attendant, vérifier sur' : 'Vérifier sur'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <VerificationLinks siren={siren} siret={siret} />
+              </div>
+            </>
           )}
           {onRetry && error.code !== 'INVALID_ID' && (
             <button type="button" onClick={onRetry} className="btn-secondary mt-4">
