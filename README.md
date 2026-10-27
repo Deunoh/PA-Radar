@@ -197,7 +197,8 @@ Une source étend `PeppolSource` (`src/server/sources/baseSource.js`) et implém
 s'enregistre ensuite dans `src/server/sources/index.js`. Deux squelettes documentés sont prêts :
 
 - **Lookup Peppol direct** : résolution DNS NAPTR sur le SML, puis appel direct du SMP (XML), pour ne plus
-  dépendre de peppol.helger.com et de sa limite de débit.
+  dépendre de peppol.helger.com et de sa limite de débit. Tout ce qu'il faut savoir (domaines du SML, format
+  des réponses, champs à conserver) est dans [`docs/source-peppol-directe.md`](docs/source-peppol-directe.md).
 - **Annuaire PPF** (API PISTE) : OAuth2 « client credentials », avec des identifiants à fournir en variables
   d'environnement (`PISTE_CLIENT_ID`, `PISTE_CLIENT_SECRET`…, voir `.env.example`).
 
