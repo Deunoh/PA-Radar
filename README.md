@@ -80,7 +80,7 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
 ### Recherche unitaire
 
 1. Saisissez un SIRET ou un SIREN. La saisie est formatée automatiquement (`750 620 585 00018`) et validée
-   en direct (longueur et clé de Luhn). Le raccourci **⌘K / Ctrl+K** place le curseur dans le champ.
+   en direct (longueur et clé de Luhn).
 2. Appuyez sur **Entrée**.
 3. La carte résultat affiche :
    - le nom et l'adresse de l'entreprise (Business Card de l'annuaire Peppol) ;

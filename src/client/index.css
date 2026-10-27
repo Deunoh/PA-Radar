@@ -100,10 +100,6 @@
   .label {
     @apply text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400;
   }
-  .kbd {
-    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-1.5 font-sans text-[11px] font-medium text-slate-500
-      dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400;
-  }
 }
 
 /* Barre de défilement discrète pour les blocs de code */

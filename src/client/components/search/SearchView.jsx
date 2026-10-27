@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { formatIdentifier, validateIdentifier } from '../../../shared/identifiers.js';
 import { lookup } from '../../api.js';
-import { useModHotkey } from '../../hooks/useHotkey.js';
 import { useLocalStorage } from '../../hooks/useLocalStorage.js';
 import { SearchBar } from './SearchBar.jsx';
 import { LookupSteps } from './LookupSteps.jsx';
@@ -27,12 +26,6 @@ export function SearchView({ sml, pendingId, onPendingConsumed }) {
   const [lastId, setLastId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [history, setHistory] = useLocalStorage('paradar.history', []);
-
-  const focusInput = useCallback(() => {
-    inputRef.current?.focus();
-    inputRef.current?.select();
-  }, []);
-  useModHotkey('k', focusInput);
 
   const pushHistory = useCallback(
     (id, res) => {
