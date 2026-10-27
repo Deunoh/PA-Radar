@@ -1,16 +1,18 @@
 /**
  * Source « lookup Peppol direct » — NON IMPLÉMENTÉE.
  *
- * Objectif : ne plus dépendre de peppol.helger.com en interrogeant directement l'infrastructure :
- *  1. Construire le nom DNS du participant (Peppol Policy for use of identifiers, NAPTR) :
- *       base32(sha256(valeur en minuscules, ex. "0225:750620585")) sans "=" final
- *       + ".iso6523-actorid-upis" + ".edelivery.tech.ec.europa.eu" (SML de production)
- *       ou ".acc.edelivery.tech.ec.europa.eu" (SML de test).
- *  2. Résolution DNS NAPTR (node:dns/promises → resolveNaptr) pour obtenir l'URL du SMP.
- *     Aucun enregistrement → le participant n'existe pas.
+ * Objectif : ne plus dépendre de peppol.helger.com en interrogeant directement l'infrastructure Peppol.
+ * Notes complètes et vérifiées (domaines, formats XML, champs à conserver) : docs/source-peppol-directe.md
+ *
+ *  1. Nom DNS du participant : base32(sha256(valeur en minuscules, ex. "0225:750620585")) sans "=" final
+ *       + ".iso6523-actorid-upis." + "participant.sml.prod.tech.peppol.org" (production)
+ *       ou "participant.sml.test.tech.peppol.org" (test).
+ *     L'ancien domaine de la Commission européenne (edelivery.tech.ec.europa.eu) ne répond plus depuis 2026.
+ *  2. Requête NAPTR (via DNS-over-HTTPS sur Cloudflare Workers) → URL du SMP.
+ *     NXDOMAIN → le participant n'existe pas.
  *  3. GET {smp}/{participantId} (XML ServiceGroup) → types de documents.
  *     GET {smp}/{participantId}/services/{documentTypeId} (XML SignedServiceMetadata)
- *     → endpoints + certificat X.509 à décoder (node:crypto X509Certificate).
+ *     → endpoints + certificat X.509 à décoder.
  *  4. Business Card : GET {smp}/businesscard/{participantId} si le SMP la publie.
  *  5. Produire les mêmes formes normalisées que helgerParser.js.
  */
