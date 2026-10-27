@@ -1,7 +1,6 @@
 import { forwardRef, useLayoutEffect, useRef } from 'react';
 import { Search, CheckCircle2, XCircle, Loader2, CornerDownLeft } from 'lucide-react';
 import { formatIdentifier, validateIdentifier } from '../../../shared/identifiers.js';
-import { isMac } from '../../hooks/useHotkey.js';
 import { cx } from '../../utils/format.js';
 
 /**
@@ -96,7 +95,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
             aria-hidden
           />
         )}
-        {value ? (
+        {value && (
           <button
             type="submit"
             disabled={loading || status.state !== 'valid'}
@@ -104,10 +103,6 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
           >
             Rechercher <CornerDownLeft className="size-3.5 opacity-70" />
           </button>
-        ) : (
-          <span className="kbd hidden sm:inline-flex" title="Raccourci pour revenir au champ">
-            {isMac ? '⌘' : 'Ctrl'} K
-          </span>
         )}
       </div>
       <div className="flex min-h-7 items-center justify-between gap-3 px-1 pt-2 text-sm">

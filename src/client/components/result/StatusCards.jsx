@@ -97,16 +97,6 @@ export function ErrorCard({ error, onRetry, siren, siret }) {
               Le client est bien enregistré sur Peppol, mais le serveur de métadonnées (SMP) de son opérateur n'a pas répondu.
             </p>
           )}
-          {siren && error.code !== 'INVALID_ID' && (
-            <>
-              <p className="mt-4 mb-2 text-xs text-slate-500 dark:text-slate-400">
-                {error.code === 'API_UNAVAILABLE' ? 'En attendant, vérifier sur' : 'Vérifier sur'}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <VerificationLinks siren={siren} siret={siret} />
-              </div>
-            </>
-          )}
           {onRetry && error.code !== 'INVALID_ID' && (
             <button type="button" onClick={onRetry} className="btn-secondary mt-4">
               Réessayer
@@ -114,6 +104,16 @@ export function ErrorCard({ error, onRetry, siren, siret }) {
           )}
         </div>
       </div>
+      {siren && error.code !== 'INVALID_ID' && (
+        <div className="-mx-6 mt-5 border-y border-slate-100 bg-slate-50/60 px-6 py-3.5 sm:-mx-7 sm:px-7 dark:border-slate-800 dark:bg-slate-900/40">
+          <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
+            {error.code === 'API_UNAVAILABLE' ? 'En attendant, vérifier sur' : 'Vérifier sur'}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <VerificationLinks siren={siren} siret={siret} />
+          </div>
+        </div>
+      )}
       {candidates && (
         <div className="mt-5">
           <CandidatesList candidates={candidates} />
