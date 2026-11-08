@@ -50,7 +50,11 @@ Il existe deux façons de lancer l'outil :
 | `CACHE_TTL_MINUTES`      | `15`                             | Durée du cache des recherches                         |
 | `RATE_LIMIT_PER_MINUTE`  | `30`                             | Recherches unitaires autorisées par minute et par IP  |
 | `EXTERNAL_TIMEOUT_MS`    | `10000`                          | Délai maximum d'un appel à l'API externe              |
-| `HELGER_API_BASE`        | `https://peppol.helger.com/api`  | URL de l'API Peppol utilisée                          |
+| `PEPPOL_SOURCE`          | `helger-puis-direct`             | Source des données : Helger avec la recherche directe en secours, `helger` seul ou `direct` seule |
+| `HELGER_API_BASE`        | `https://peppol.helger.com/api`  | URL de l'API Helger                                   |
+| `SML_DOMAIN_PROD`        | `participant.sml.prod.tech.peppol.org` | Registre Peppol (SML) de production, pour la recherche directe |
+| `SML_DOMAIN_TEST`        | `participant.sml.test.tech.peppol.org` | Registre Peppol (SML) de test                   |
+| `DOH_URL`                | `https://cloudflare-dns.com/dns-query` | Résolveur DNS-over-HTTPS utilisé par la recherche directe |
 | `DIRECTORY_URL_PROD`     | `https://directory.peppol.eu`    | Annuaire Peppol (réseau de production)                |
 | `DIRECTORY_URL_TEST`     | `https://test-directory.peppol.eu` | Annuaire Peppol (réseau de test)                    |
 | `HELGER_MIN_INTERVAL_MS` | `1200`                           | Espacement minimal entre deux appels à l'API Helger   |
@@ -120,7 +124,13 @@ Le menu ⚙ de l'en-tête bascule entre le SML de production (`peppolprod`) et c
 
 ```
 Navigateur ──► /api/lookup ──► LookupService ──► source « helger » ──► peppol.helger.com ──► SML / SMP
+                                                  └─ si Helger ne répond pas ─► recherche directe ──► SML / SMP
 ```
+
+Par défaut, les données viennent de peppol.helger.com. S'il ne répond pas, la **recherche directe** prend le
+relais : elle interroge elle-même le registre Peppol (SML, par DNS) puis le serveur de l'opérateur (SMP),
+et produit exactement les mêmes informations. Après une panne, Helger est laissé de côté pendant une minute.
+La variable `PEPPOL_SOURCE` permet de n'utiliser que l'une des deux sources.
 
 1. **Nettoyage et validation** : suppression des espaces, points et tirets, puis contrôle de la longueur
    (9 ou 14 chiffres) et de la clé de Luhn. Les SIRET de La Poste suivent une règle spécifique.
@@ -157,6 +167,7 @@ Navigateur ──► /api/lookup ──► LookupService ──► source « hel
   passent donc par une file qui les espace de 1,2 s. Un 429 suspend la file pendant la durée `Retry-After`,
   puis l'appel est réessayé (2 fois au maximum). Une recherche complète prend donc **environ 5 s**
   (3 ou 4 existences + 2 lectures SMP ; la recherche dans l'annuaire Peppol se fait en parallèle).
+- La recherche directe n'a pas cette limite : une recherche complète prend environ 1 à 2 s.
 - Messages d'erreur distincts : identifiant invalide, non trouvé sur Peppol, API Peppol indisponible,
   API Peppol saturée, SMP qui ne répond pas, limite locale atteinte.
 
@@ -181,10 +192,13 @@ src/server/
   config.js · errors.js         configuration, erreurs typées
   services/                     orchestration, cache, construction du résultat, hébergeur
   parsing/helgerParser.js       lecture des JSON de l'API Helger (fonctions pures)
+  parsing/smpParser.js          XML des SMP → format JSON de Helger (avec xml.js et x509.js)
+  parsing/peppolDocumentTypes.js  noms des types de documents (généré par scripts/update-document-types.mjs)
   sources/
     baseSource.js               interface commune des sources
-    helgerSource.js             source actuelle (peppol.helger.com)
-    directPeppolSource.js       à implémenter : DNS SML + appel direct du SMP
+    helgerSource.js             source principale (peppol.helger.com)
+    directPeppolSource.js       recherche directe : DNS SML + appel direct du SMP
+    fallbackSource.js           Helger, puis la recherche directe s'il ne répond pas
     ppfSource.js                à implémenter : annuaire PPF via l'API PISTE (OAuth2)
 src/client/                     interface React + Tailwind
 tests/                          tests vitest, fixtures = réponses réelles de l'API
@@ -194,11 +208,14 @@ tests/                          tests vitest, fixtures = réponses réelles de l
 
 Une source étend `PeppolSource` (`src/server/sources/baseSource.js`) et implémente `checkExistence`,
 `getServiceGroup` et `getServiceMetadata` en renvoyant les formes normalisées décrites dans ce fichier. Elle
-s'enregistre ensuite dans `src/server/sources/index.js`. Deux squelettes documentés sont prêts :
+s'enregistre ensuite dans `src/server/sources/index.js`.
 
-- **Lookup Peppol direct** : résolution DNS NAPTR sur le SML, puis appel direct du SMP (XML), pour ne plus
-  dépendre de peppol.helger.com et de sa limite de débit. Tout ce qu'il faut savoir (domaines du SML, format
-  des réponses, champs à conserver) est dans [`docs/source-peppol-directe.md`](docs/source-peppol-directe.md).
+La **recherche directe** est documentée dans [`docs/source-peppol-directe.md`](docs/source-peppol-directe.md)
+(domaines du SML, format des réponses, champs à conserver). Pour vérifier qu'elle donne les mêmes
+informations que Helger : `node scripts/compare-sources.mjs <SIRET|SIREN|identifiant Peppol> …`.
+
+Un squelette documenté reste à implémenter :
+
 - **Annuaire PPF** (API PISTE) : OAuth2 « client credentials », avec des identifiants à fournir en variables
   d'environnement (`PISTE_CLIENT_ID`, `PISTE_CLIENT_SECRET`…, voir `.env.example`).
 
@@ -232,7 +249,7 @@ Les tests couvrent :
   apparaît « non trouvée » alors qu'elle peut recevoir des factures électroniques.
 - **Dépendance à peppol.helger.com**, un service public tiers, gratuit, sans garantie de disponibilité et
   limité en débit (environ 1 requête/s). Les recherches en lot sont donc lentes (environ 6 s par identifiant
-  hors cache).
+  hors cache). S'il tombe, la recherche directe prend le relais.
 - **Un seul type de document interrogé** (le type de référence). Un participant qui utilise des points
   d'accès différents selon le type de document n'est vu qu'à travers celui-ci.
 - **Business Card facultative** : certains SMP ne publient ni nom ni adresse, ou publient des données de
