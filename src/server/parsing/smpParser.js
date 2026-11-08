@@ -16,16 +16,28 @@ import { DOCUMENT_TYPES } from './peppolDocumentTypes.js';
 const DOCUMENT_TYPES_LOWER = new Map(Object.entries(DOCUMENT_TYPES).map(([id, v]) => [id.toLowerCase(), v]));
 
 /** Identifiant XML (<X scheme="s">valeur</X>) → « s::valeur ». */
-const identifier = (el) => (el ? (el.attrs.scheme ? `${el.attrs.scheme}::${el.text}` : el.text) : null);
+const identifier = (el) => {
+  if (!el) return null;
+  const value = el.text.trim();
+  return el.attrs.scheme ? `${el.attrs.scheme}::${value}` : value;
+};
 
 /**
- * Dates SMP → format Helger : l'heure est gardée telle qu'écrite par le SMP (fractions de seconde
- * comprises) et seul le fuseau est retiré. « 2026-09-01T00:00:00+02:00 » → « 2026-09-01T00:00:00 »,
- * comme Helger (vérifié par scripts/compare-sources.mjs).
+ * Dates SMP → format Helger : l'heure est gardée telle qu'écrite par le SMP et le fuseau est retiré.
+ * « 2026-09-01T00:00:00+02:00 » → « 2026-09-01T00:00:00 ». Les fractions de seconde suivent Java
+ * (3, 6 ou 9 chiffres, rien si elles sont nulles) : « .000 » disparaît, « .607 » et « .988194 » restent.
+ * Règles vérifiées par scripts/compare-sources.mjs.
  */
 export function toHelgerDate(value) {
   if (!value) return null;
-  return value.trim().replace(/(Z|[+-]\d\d:?\d\d)$/i, '');
+  const local = value.trim().replace(/(Z|[+-]\d\d:?\d\d)$/i, '');
+  return local.replace(/\.(\d+)$/, (m, digits) => {
+    const nanos = digits.slice(0, 9).padEnd(9, '0');
+    if (/^0+$/.test(nanos)) return '';
+    if (nanos.endsWith('000000')) return `.${nanos.slice(0, 3)}`;
+    if (nanos.endsWith('000')) return `.${nanos.slice(0, 6)}`;
+    return `.${nanos}`;
+  });
 }
 
 const lookupDocumentType = (id) => DOCUMENT_TYPES[id] || DOCUMENT_TYPES_LOWER.get(id.toLowerCase());

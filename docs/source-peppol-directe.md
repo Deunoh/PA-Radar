@@ -247,6 +247,12 @@ recherche complète de leurs SIREN et de quelques autres (DANONE par SIRET, 7506
   répondait HTTP 503. Les deux sources renvoient SMP_UNREACHABLE (même carte d'erreur) ; Helger dit
   « son SMP ne renvoie aucune information » (il traduit toute panne du SMP en 404), la recherche directe
   dit « ne répond pas correctement (HTTP 503) », ce qui est exact. Gardé tel quel.
+- Formats d'adressage de la réforme, vérifiés sur de vrais participants : SIREN (`0225:750620585`),
+  SIREN_SIRET (`0225:923409346_92340934600049`), SIREN_SUFFIXE (`0225:552032534_danonesender`,
+  `0225:552006454_achatpub_479046435`), SIREN_SIRET_CODEROUTAGE (`0225:538477050_53847705000016_cdo`,
+  `0225:421771874_42177187400011_lojii-30119169800036`, `0225:532310323_53231032300011__agdcl`).
+  Deux détails de plus alignés sur Helger à cette occasion : « .000 » retiré des dates, espace finale
+  gardée dans les textes (ex. « TX2 Acces point PROD »).
 
 ## Sources
 

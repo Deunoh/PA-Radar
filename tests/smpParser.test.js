@@ -25,6 +25,7 @@ describe('parseXml', () => {
     );
     expect(root.name).toBe('Root');
     expect(root.attrs).toEqual({ id: '1' });
+    expect(parseXml('<a><b>texte </b></a>').children[0].text).toBe('texte ');
     expect(childText(root, 'B')).toBe('x & y é');
     expect(child(root, 'C')).toMatchObject({ name: 'C', children: [] });
     expect(childText(root, 'D')).toBe('<brut>');
@@ -56,6 +57,8 @@ describe('toHelgerDate / describeDocumentType', () => {
     expect(toHelgerDate('2026-09-01T00:00:00+02:00')).toBe('2026-09-01T00:00:00');
     expect(toHelgerDate('2026-07-08T23:30:33.988194+02:00')).toBe('2026-07-08T23:30:33.988194');
     expect(toHelgerDate('2026-04-09T09:01:58.607')).toBe('2026-04-09T09:01:58.607');
+    expect(toHelgerDate('2025-01-01T00:00:00.000Z')).toBe('2025-01-01T00:00:00');
+    expect(toHelgerDate('2025-01-01T00:00:00.5Z')).toBe('2025-01-01T00:00:00.500');
     expect(toHelgerDate(null)).toBeNull();
   });
 

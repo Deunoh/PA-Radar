@@ -9,7 +9,8 @@
  * @property {string} name         nom local (sans préfixe)
  * @property {Record<string, string>} attrs  attributs, noms locaux
  * @property {XmlElement[]} children
- * @property {string} text         texte direct (hors enfants), sans espaces autour
+ * @property {string} text         texte direct (hors enfants) : tel quel pour un élément sans enfant
+ *                                 (comme Helger, qui garde par ex. une espace finale), sans espaces autour sinon
  */
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
@@ -51,7 +52,9 @@ export function parseXml(xml) {
       }
     } else if (closing) {
       if (stack.length < 2 || stack.at(-1).name !== localName(closing)) throw new Error(`XML mal formé : </${closing}> inattendu`);
-      stack.pop().text = textParts.pop().join('').trim();
+      const el = stack.pop();
+      const text = textParts.pop().join('');
+      el.text = el.children.length ? text.trim() : text;
     }
   }
   if (stack.length !== 1) throw new Error('XML mal formé : élément non fermé');
