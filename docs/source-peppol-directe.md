@@ -1,8 +1,27 @@
-# Source « Peppol direct » : notes de préparation
+# Source « Peppol direct »
 
 Notes réunies le 27/10/2026, le jour où peppol.helger.com est tombé (404 puis 503 sur tout le site,
-page d'accueil comprise). Elles servent à écrire `src/server/sources/directPeppolSource.js` sans repartir
-de zéro. **Tout ce qui est marqué « vérifié » a été testé en direct ce jour-là.**
+page d'accueil comprise). **Tout ce qui est marqué « vérifié » a été testé en direct ce jour-là.**
+
+## État (08/11/2026)
+
+**Implémentée** dans `src/server/sources/directPeppolSource.js`, utilisée **en secours** de Helger
+(`src/server/sources/fallbackSource.js`) : si Helger renvoie API_UNAVAILABLE, UPSTREAM_RATE_LIMITED ou
+SMP_UNREACHABLE, la même question est posée à la recherche directe. Après une panne de Helger (les deux
+premiers codes), il est laissé de côté pendant une minute.
+
+- Choix de la source : variable `PEPPOL_SOURCE` = `helger-puis-direct` (défaut), `helger` ou `direct`.
+  Passer en « directe en principal » plus tard demandera une petite option de plus (ordre inversé).
+- Le XML des SMP est traduit **au format JSON de Helger** (`src/server/parsing/smpParser.js`) puis lu par
+  `helgerParser.js` : formes normalisées et vue JSON brute identiques. Les objets bruts de la recherche
+  directe portent `source: "direct"`.
+- Lecteur XML (`parsing/xml.js`) et décodeur X.509 (`parsing/x509.js`) écrits sans dépendance : même code
+  sous Node et sur Workers (vérifié avec `wrangler dev`).
+- Noms des types de documents : `parsing/peppolDocumentTypes.js`, généré par
+  `node scripts/update-document-types.mjs [version]` (liste v9.7). À relancer quand Peppol publie une
+  nouvelle version de ses listes de codes.
+- Comparaison avec Helger : `node scripts/compare-sources.mjs <SIRET|SIREN|identifiant Peppol> …`
+  (résultats de la première campagne en section 8).
 
 Contrainte posée par l'utilisateur : **ne perdre aucune fonctionnalité ni aucune information** affichée
 aujourd'hui. La section 2 liste tout ce que Helger fournit, champ par champ, comme liste de contrôle.
@@ -167,7 +186,24 @@ Il faut donc décoder le X.509 pour retrouver `operator`, `popId`, `subject`, `i
 `validFrom`, `validTo`, puis calculer `validByDate`. Remettre le DN dans l'ordre Helger
 (`CN=…,OU=…,O=…,C=…`) pour que l'affichage ne change pas.
 
-## 5. Points à trancher ou vérifier pendant l'implémentation
+## 5. Points tranchés pendant l'implémentation
+
+Ci-dessous la liste d'origine ; décisions prises :
+- XML : lecteur maison (`parsing/xml.js`), préfixes d'espace de noms retirés.
+- X.509 : décodeur DER maison (`parsing/x509.js`) ; résultat identique à Helger au caractère près
+  (DN au format RFC 2253, serial16, dates UTC sans fuseau).
+- Formats busdox et OASIS SMP 1.0 acceptés (`EndpointReference/Address` ou `EndpointURI`) ; une autre
+  racine XML donne SMP_UNREACHABLE avec un message clair. Redirections SMP suivies (une seule).
+- Pas d'espacement entre appels pour la recherche directe ; l'adresse du SMP est mémorisée 5 min.
+- Ordre des types de documents : trié par identifiant, comme Helger (l'ordre compte pour
+  `chooseReferenceDocumentType`). Certificat gardé tel quel (retours à la ligne compris), comme Helger.
+- Dates des points d'accès : comme Helger, l'heure écrite par le SMP est gardée (fractions de seconde
+  comprises) et seul le fuseau est retiré (`2026-09-01T00:00:00+02:00` → `2026-09-01T00:00:00`).
+  Les dates des certificats, elles, sont en UTC (c'est ce que contient le certificat).
+- Types PINT (`peppol-doctype-wildcard`) : comme Helger, suffixe « (PINT exact match) » ou
+  « (PINT wildcard match) » ; dans ce second cas l'identifiant finit par `*`, retiré pour trouver le nom.
+
+Liste d'origine :
 
 - **Lecture du XML sur Workers** : pas de `DOMParser`. Options : une petite bibliothèque
   (ex. `fast-xml-parser`) ou une lecture ciblée par expressions régulières. Gérer les préfixes
@@ -197,6 +233,20 @@ Il faut donc décoder le X.509 pour retrouver `operator`, `popId`, `subject`, `i
 `README.md` (variables `HELGER_*`, schéma d'architecture, limites), `.env.example`,
 `src/server/config.js`, `src/server/api.js` (`helgerMinIntervalMs`), `src/server/sources/index.js`
 (source par défaut), `src/client/components/about/AboutView.jsx` (texte sur les dépendances).
+
+## 8. Comparaison avec Helger (08/11/2026)
+
+`scripts/compare-sources.mjs` sur 26 participants servis par 26 SMP différents (Tickstar, EDICOM,
+B2Brouter, Esker, Saphety, Serensia, Cegedim, Pennylane, Tradeshift, ecosio, Qonto, Tessi…), puis sur la
+recherche complète de leurs SIREN et de quelques autres (DANONE par SIRET, 750620585, 923409346,
+732829320) : 54 comparaisons.
+
+- Premier passage : 20 différences, en trois causes, toutes corrigées : fuseau et fractions de seconde
+  des dates (voir section 5), noms des types PINT, retours à la ligne du certificat.
+- Second passage : **tout est identique**, sauf un cas où le SMP de l'opérateur (smp.pdp-nexcer.fr)
+  répondait HTTP 503. Les deux sources renvoient SMP_UNREACHABLE (même carte d'erreur) ; Helger dit
+  « son SMP ne renvoie aucune information » (il traduit toute panne du SMP en 404), la recherche directe
+  dit « ne répond pas correctement (HTTP 503) », ce qui est exact. Gardé tel quel.
 
 ## Sources
 

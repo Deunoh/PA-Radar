@@ -16,6 +16,8 @@ const parseTrustProxy = (value) => {
 
 export const SUPPORTED_SMLS = ['peppolprod', 'peppoltest'];
 
+export const PEPPOL_SOURCES = ['helger-puis-direct', 'helger', 'direct'];
+
 export const config = {
   port: int(process.env.PORT, 3001),
   defaultSml: SUPPORTED_SMLS.includes(process.env.DEFAULT_SML) ? process.env.DEFAULT_SML : 'peppolprod',
@@ -28,6 +30,17 @@ export const config = {
     peppolprod: (process.env.DIRECTORY_URL_PROD || 'https://directory.peppol.eu').replace(/\/$/, ''),
     peppoltest: (process.env.DIRECTORY_URL_TEST || 'https://test-directory.peppol.eu').replace(/\/$/, ''),
   },
+  // Source des données Peppol : « helger-puis-direct » (Helger, et la recherche directe en secours
+  // s'il ne répond pas), « helger » (Helger seul) ou « direct » (recherche directe seule)
+  peppolSource: PEPPOL_SOURCES.includes(process.env.PEPPOL_SOURCE) ? process.env.PEPPOL_SOURCE : 'helger-puis-direct',
+  // Registre Peppol (SML), interrogé par la recherche directe. Repris par Peppol en 2026 : l'ancien
+  // domaine de la Commission européenne (edelivery.tech.ec.europa.eu) ne répond plus.
+  smlDomains: {
+    peppolprod: process.env.SML_DOMAIN_PROD || 'participant.sml.prod.tech.peppol.org',
+    peppoltest: process.env.SML_DOMAIN_TEST || 'participant.sml.test.tech.peppol.org',
+  },
+  // Résolveur DNS-over-HTTPS (format JSON) : Cloudflare Workers ne fait pas de requête DNS native
+  dohUrl: process.env.DOH_URL || 'https://cloudflare-dns.com/dns-query',
   // Espacement minimal entre deux appels à l'API Helger (elle renvoie 429 au-delà d'~1 req/s)
   helgerMinIntervalMs: int(process.env.HELGER_MIN_INTERVAL_MS, 1200),
   // Proxys de confiance pour lire l'IP du client (X-Forwarded-For) : « true » derrière un hébergeur
