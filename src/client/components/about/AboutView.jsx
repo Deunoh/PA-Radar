@@ -100,9 +100,9 @@ const LIMITS = [
 
 /**
  * Onglet « À propos » : l'intérêt de PAradar expliqué à quelqu'un qui ne le connaît pas.
- * @param {{ onStart: () => void }} props
+ * @param {{ onStart: () => void, onShowLegal: () => void }} props
  */
-export function AboutView({ onStart }) {
+export function AboutView({ onStart, onShowLegal }) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-12 px-4 pt-10 sm:px-6 sm:pt-14">
       {/* ——— Introduction ——— */}
@@ -221,6 +221,16 @@ export function AboutView({ onStart }) {
         <div className="flex flex-wrap gap-2">
           <OfficialLinks />
         </div>
+      </Section>
+
+      {/* ——— Informations légales ——— */}
+      <Section title="Informations légales">
+        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+          PAradar est gratuit, sans compte, sans cookie ni mesure d'audience.{' '}
+          <button type="button" onClick={onShowLegal} className="link">
+            Mentions légales et données personnelles
+          </button>
+        </p>
       </Section>
     </div>
   );

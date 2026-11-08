@@ -1,7 +1,10 @@
 import { Info } from 'lucide-react';
 
-/** Avertissement permanent et discret sur la portée du résultat. */
-export function Disclaimer() {
+/**
+ * Avertissement permanent et discret sur la portée du résultat, et lien vers les mentions légales.
+ * @param {{ onShowLegal: () => void }} props
+ */
+export function Disclaimer({ onShowLegal }) {
   return (
     <footer className="mx-auto max-w-5xl px-4 pt-6 pb-10 sm:px-6">
       <div className="flex gap-3 rounded-2xl border border-dashed border-slate-300/80 px-4 py-3 text-xs leading-relaxed text-slate-500 dark:border-slate-800 dark:text-slate-400">
@@ -12,6 +15,11 @@ export function Disclaimer() {
           <strong className="font-medium text-slate-600 dark:text-slate-300">La source officielle reste l'annuaire du PPF.</strong>
         </p>
       </div>
+      <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
+        <button type="button" onClick={onShowLegal} className="hover:text-slate-600 hover:underline dark:hover:text-slate-300">
+          Mentions légales et données personnelles
+        </button>
+      </p>
     </footer>
   );
 }

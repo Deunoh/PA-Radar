@@ -5,6 +5,7 @@ import { Disclaimer } from './components/layout/Disclaimer.jsx';
 import { SearchView } from './components/search/SearchView.jsx';
 import { BatchView } from './components/batch/BatchView.jsx';
 import { AboutView } from './components/about/AboutView.jsx';
+import { LegalView } from './components/legal/LegalView.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -27,6 +28,11 @@ export default function App() {
     window.scrollTo({ top: 0 });
   }, []);
   const consumePending = useCallback(() => setPendingId(null), []);
+  // Onglets hors du menu (mentions légales), ouverts depuis le pied de page ou « À propos »
+  const showTab = useCallback((id) => {
+    setTab(id);
+    window.scrollTo({ top: 0 });
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -40,10 +46,13 @@ export default function App() {
           <BatchView sml={sml} onOpen={openInSearch} />
         </div>
         <div hidden={tab !== 'about'}>
-          <AboutView onStart={() => { setTab('search'); window.scrollTo({ top: 0 }); }} />
+          <AboutView onStart={() => showTab('search')} onShowLegal={() => showTab('legal')} />
+        </div>
+        <div hidden={tab !== 'legal'}>
+          <LegalView />
         </div>
       </main>
-      <Disclaimer />
+      <Disclaimer onShowLegal={() => showTab('legal')} />
     </div>
   );
 }

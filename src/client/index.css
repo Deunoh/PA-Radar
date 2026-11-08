@@ -97,6 +97,9 @@
       transition focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 focus:outline-none
       dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
   }
+  .link {
+    @apply text-accent-600 underline decoration-accent-600/30 underline-offset-2 hover:decoration-accent-600 dark:text-accent-400 dark:decoration-accent-400/30 dark:hover:decoration-accent-400;
+  }
   .label {
     @apply text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400;
   }
