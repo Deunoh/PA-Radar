@@ -121,10 +121,10 @@ describe('LookupService', () => {
       directorySearched = true;
       return null;
     };
-    const res = await new LookupService({ source }).lookup('750620585_suffixe');
+    const res = await new LookupService({ source }).lookup('123456782_suffixe');
     expect(directorySearched).toBe(false);
     expect(res.type).toBe('address');
-    expect(res.candidates.map((c) => c.shortId)).toEqual(['0225:750620585_suffixe']);
+    expect(res.candidates.map((c) => c.shortId)).toEqual(['0225:123456782_suffixe']);
     expect(res.directory.searched).toBe(false);
     expect(res.result).toBeNull();
   });

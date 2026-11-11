@@ -121,8 +121,8 @@ describe('describeFrenchAddressing (4 formats d\'adresse de la réforme FR)', ()
 
 describe('adresse de facturation complète', () => {
   it('reconnaît une adresse, avec ou sans schéma, et en garde la casse', () => {
-    for (const input of ['431923796_4S', '0225:431923796_4S', 'iso6523-actorid-upis::0225:431923796_4S', ' 431 923 796_4S ']) {
-      expect(validateIdentifier(input)).toEqual({ valid: true, cleaned: '431923796_4S', type: 'address', siren: '431923796', siret: null, error: null });
+    for (const input of ['123456782_FACTURES', '0225:123456782_FACTURES', 'iso6523-actorid-upis::0225:123456782_FACTURES', ' 123 456 782_FACTURES ']) {
+      expect(validateIdentifier(input)).toEqual({ valid: true, cleaned: '123456782_FACTURES', type: 'address', siren: '123456782', siret: null, error: null });
     }
   });
 
@@ -135,36 +135,36 @@ describe('adresse de facturation complète', () => {
   });
 
   it('signale les adresses incomplètes ou invalides', () => {
-    expect(validateIdentifier('431923796_').error).toBe('Complétez avec le suffixe, le SIRET ou le code de routage');
-    expect(validateIdentifier('43192379_4S').error).toBe("L'adresse doit commencer par le SIREN (9 chiffres) suivi de « _ »");
-    expect(validateIdentifier('431923797_4S').error).toBe('Clé de contrôle du SIREN invalide');
-    expect(validateIdentifier('0009:43192379600011').error).toBe('Seules les adresses de la réforme française (0225) sont acceptées');
-    expect(validateIdentifier('431923796_a/b').error).toBe("L'adresse contient un caractère non autorisé");
+    expect(validateIdentifier('123456782_').error).toBe('Complétez avec le suffixe, le SIRET ou le code de routage');
+    expect(validateIdentifier('12345678_FACTURES').error).toBe("L'adresse doit commencer par le SIREN (9 chiffres) suivi de « _ »");
+    expect(validateIdentifier('123456783_FACTURES').error).toBe('Clé de contrôle du SIREN invalide');
+    expect(validateIdentifier('0009:12345678200015').error).toBe('Seules les adresses de la réforme française (0225) sont acceptées');
+    expect(validateIdentifier('123456782_a/b').error).toBe("L'adresse contient un caractère non autorisé");
   });
 
   it('ne teste que l\'adresse saisie', () => {
-    expect(buildCandidates(validateIdentifier('431923796_4S'))).toEqual([
+    expect(buildCandidates(validateIdentifier('123456782_FACTURES'))).toEqual([
       {
         scheme: '0225',
-        value: '431923796_4S',
-        shortId: '0225:431923796_4S',
-        participantId: 'iso6523-actorid-upis::0225:431923796_4S',
+        value: '123456782_FACTURES',
+        shortId: '0225:123456782_FACTURES',
+        participantId: 'iso6523-actorid-upis::0225:123456782_FACTURES',
         label: 'Réforme FR · suffixe (adresse saisie)',
       },
     ]);
   });
 
   it('formate seulement le SIREN de l\'adresse', () => {
-    expect(formatIdentifier('431923796_4S')).toBe('431 923 796_4S');
-    expect(formatIdentifier('431 923 796_4S')).toBe('431 923 796_4S');
-    expect(formatIdentifier('0225:431923796_4S')).toBe('0225:431923796_4S');
+    expect(formatIdentifier('123456782_FACTURES')).toBe('123 456 782_FACTURES');
+    expect(formatIdentifier('123 456 782_FACTURES')).toBe('123 456 782_FACTURES');
+    expect(formatIdentifier('0225:123456782_FACTURES')).toBe('0225:123456782_FACTURES');
   });
 
   it('accepte les adresses dans une liste (recherche en lot)', () => {
-    expect(splitIdentifierList('431923796_4S, 750620585\n0225:538477050_53847705000016_cdo')).toEqual([
-      '431923796_4S',
+    expect(splitIdentifierList('123456782_FACTURES, 750620585\n0225:123456782_12345678200015_service')).toEqual([
+      '123456782_FACTURES',
       '750620585',
-      '0225:538477050_53847705000016_cdo',
+      '0225:123456782_12345678200015_service',
     ]);
   });
 });

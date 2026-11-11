@@ -19,7 +19,7 @@ const FEATURES = [
   {
     icon: Search,
     title: 'Un SIRET ou un SIREN suffit',
-    text: "La saisie est contrôlée en direct (longueur, clé de Luhn) : une faute de frappe est signalée avant même de lancer la recherche. Une adresse complète vue dans l'annuaire Chorus Pro (431923796_4S) peut aussi être vérifiée directement.",
+    text: "La saisie est contrôlée en direct (longueur, clé de Luhn) : une faute de frappe est signalée avant même de lancer la recherche. Une adresse complète vue dans l'annuaire Chorus Pro (SIREN_SUFFIXE…) peut aussi être vérifiée directement.",
   },
   {
     icon: Building2,

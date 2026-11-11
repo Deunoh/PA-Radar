@@ -78,7 +78,7 @@ function siretKeyIsValid(siret) {
 /**
  * @typedef {Object} IdentifierValidation
  * @property {boolean} valid
- * @property {string} cleaned      saisie nettoyée (pour une adresse : la valeur sans schéma, ex. "431923796_4S")
+ * @property {string} cleaned      saisie nettoyée (pour une adresse : la valeur sans schéma, ex. "123456782_FACTURES")
  * @property {'siren'|'siret'|'address'|null} type
  * @property {string|null} siren
  * @property {string|null} siret
@@ -99,7 +99,7 @@ export function isAddressInput(raw) {
 
 /**
  * Valide une adresse de facturation de la réforme (schéma Peppol 0225) saisie en entier :
- * « 431923796_4S », « 0225:431923796_4S » ou « iso6523-actorid-upis::0225:431923796_4S ».
+ * « 123456782_FACTURES », « 0225:123456782_FACTURES » ou « iso6523-actorid-upis::0225:123456782_FACTURES ».
  * Les tirets et points font partie de l'adresse (codes de routage) : seuls les espaces sont retirés.
  * @param {string} raw
  * @returns {IdentifierValidation}
@@ -154,7 +154,7 @@ export function validateIdentifier(raw) {
  * Formate un identifiant pour l'affichage : « 750 620 585 » ou « 750 620 585 00018 ».
  * Fonctionne aussi sur une saisie partielle (formatage pendant la frappe).
  * Les caractères non numériques sont retirés, sauf pour une adresse complète : seul son SIREN
- * est espacé (« 431 923 796_4S »), le reste est gardé tel quel, sans espaces.
+ * est espacé (« 123 456 782_FACTURES »), le reste est gardé tel quel, sans espaces.
  * @param {string} value
  * @returns {string}
  */
