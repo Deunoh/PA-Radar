@@ -53,7 +53,7 @@ export function CandidatesList({ candidates, directory }) {
             >
               {{ found: 'Trouvé', missing: 'Non trouvé', error: 'Erreur' }[status]}
             </span>
-            <CopyButton value={c.participantId} label="Copier l'identifiant complet" message="Identifiant copié" />
+            <CopyButton value={c.shortId} label="Copier l'identifiant" message="Identifiant copié" />
           </li>
         );
       })}
