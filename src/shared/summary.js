@@ -18,8 +18,9 @@ export function formatDateFr(value) {
  * @returns {string}
  */
 export function buildTicketSummary(response) {
-  const { siren, siret, result, candidates = [], queriedAt } = response;
-  const idLabel = siret ? `SIRET ${siret}` : `SIREN ${siren}`;
+  const { siren, siret, type, result, candidates = [], queriedAt } = response;
+  const idLabel =
+    type === 'address' ? `Adresse ${candidates[0]?.shortId ?? ''}` : siret ? `SIRET ${siret}` : `SIREN ${siren}`;
   const checked = `Vérifié le ${formatDateFr(queriedAt || new Date())} via SMP Peppol`;
 
   if (!result) {

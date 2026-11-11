@@ -85,6 +85,12 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
 
 1. Saisissez un SIRET ou un SIREN. La saisie est formatée automatiquement (`750 620 585 00018`) et validée
    en direct (longueur et clé de Luhn).
+
+   On peut aussi saisir une **adresse de facturation complète** de la réforme, avec ou sans `0225:` :
+   `431923796_4S` (SIREN_SUFFIXE), `538477050_53847705000016_cdo` (SIREN_SIRET_CODEROUTAGE)… PAradar vérifie
+   alors cette seule adresse sur Peppol. C'est utile pour une adresse vue dans l'annuaire Chorus Pro mais que
+   son opérateur n'a pas publiée dans l'annuaire Peppol : PAradar ne peut pas la découvrir à partir du SIREN
+   seul, puisque les suffixes et codes de routage ne se devinent pas.
 2. Appuyez sur **Entrée**.
 3. La carte résultat affiche :
    - le nom et l'adresse de l'entreprise (Business Card de l'annuaire Peppol) ;
