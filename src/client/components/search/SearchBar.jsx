@@ -38,7 +38,7 @@ export function liveValidation(value) {
 /**
  * Grand champ de recherche façon « barre de commande ».
  * Formate automatiquement la saisie (750 620 585 00018) en conservant la position du curseur.
- * Accepte aussi une adresse de facturation complète (431923796_4S), dont seul le SIREN est espacé.
+ * Accepte aussi une adresse de facturation complète (SIREN_SUFFIXE…), dont seul le SIREN est espacé.
  */
 export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubmit, loading }, inputRef) {
   // Nombre de caractères (hors espaces) avant le curseur : le formatage n'ajoute ou ne retire que des espaces
@@ -132,7 +132,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
             (status.state === 'partial' || status.state === 'empty') && 'text-slate-400',
           )}
         >
-          {status.message || 'Saisissez un SIREN (9 chiffres), un SIRET (14 chiffres) ou une adresse complète (ex. 431923796_4S)'}
+          {status.message || 'Saisissez un SIREN (9 chiffres), un SIRET (14 chiffres) ou une adresse complète (SIREN_SUFFIXE, SIREN_SIRET_CODEROUTAGE…)'}
         </p>
         <button type="submit" disabled={loading || status.state !== 'valid'} className="btn-primary h-9 sm:hidden">
           Rechercher

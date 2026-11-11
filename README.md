@@ -87,7 +87,7 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
    en direct (longueur et clé de Luhn).
 
    On peut aussi saisir une **adresse de facturation complète** de la réforme, avec ou sans `0225:` :
-   `431923796_4S` (SIREN_SUFFIXE), `538477050_53847705000016_cdo` (SIREN_SIRET_CODEROUTAGE)… PAradar vérifie
+   `SIREN_SUFFIXE`, `SIREN_SIRET_CODEROUTAGE`… (par exemple `123456782_FACTURES`). PAradar vérifie
    alors cette seule adresse sur Peppol. C'est utile pour une adresse vue dans l'annuaire Chorus Pro mais que
    son opérateur n'a pas publiée dans l'annuaire Peppol : PAradar ne peut pas la découvrir à partir du SIREN
    seul, puisque les suffixes et codes de routage ne se devinent pas.
