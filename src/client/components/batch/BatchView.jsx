@@ -180,7 +180,7 @@ export function BatchView({ sml, onOpen }) {
           disabled={running}
           rows={6}
           spellCheck={false}
-          placeholder={'75062058500018\n552100554\n…'}
+          placeholder={'75062058500018\n552100554\n431923796_4S\n…'}
           aria-label="Liste d'identifiants"
           className="input scrollbar-thin min-h-36 resize-y font-mono text-[13px] leading-relaxed"
           onDragOver={(e) => e.preventDefault()}

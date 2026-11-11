@@ -133,12 +133,15 @@ export class LookupService {
     //      si l'API externe l'exige) ;
     //    - recherche du SIREN dans l'annuaire Peppol, pour découvrir les inscriptions
     //      impossibles à deviner (autres établissements, codes de routage).
+    //      Inutile quand une adresse complète a été saisie : c'est elle seule qu'on vérifie.
     const [existence, directoryOutcome] = await Promise.all([
       Promise.allSettled(constructed.map((c) => this.source.checkExistence(c.participantId, { sml }))),
-      this.source.searchDirectory(validation.siren, { sml }).then(
-        (value) => ({ ok: true, value }),
-        (error) => ({ ok: false, error }),
-      ),
+      validation.type === 'address'
+        ? { ok: true, value: null }
+        : this.source.searchDirectory(validation.siren, { sml }).then(
+            (value) => ({ ok: true, value }),
+            (error) => ({ ok: false, error }),
+          ),
     ]);
 
     const candidatesOut = constructed.map((c, i) => {

@@ -1,6 +1,6 @@
 import { forwardRef, useLayoutEffect, useRef } from 'react';
 import { Search, CheckCircle2, XCircle, Loader2, CornerDownLeft } from 'lucide-react';
-import { formatIdentifier, validateIdentifier } from '../../../shared/identifiers.js';
+import { describeFrenchAddressing, formatIdentifier, isAddressInput, validateIdentifier } from '../../../shared/identifiers.js';
 import { cx } from '../../utils/format.js';
 
 /**
@@ -8,8 +8,20 @@ import { cx } from '../../utils/format.js';
  *  - vide            → neutre
  *  - saisie partielle → neutre + indication
  *  - 9 ou 14 chiffres → valide / invalide (clé de Luhn)
+ *  - adresse complète (SIREN_…) → valide / invalide dès qu'il y a quelque chose après « _ »
  */
 export function liveValidation(value) {
+  if (isAddressInput(value)) {
+    const v = validateIdentifier(value);
+    if (!v.valid) {
+      // « 0225: », « 0225:4319… », « 431 923 796_ » : la saisie est en cours, pas encore fausse
+      const rest = value.replace(/\s/g, '').replace(/^(iso6523-actorid-upis::)?(0225:)?/i, '');
+      const partial = /^\d{0,9}_?$/.test(rest);
+      return { state: partial ? 'partial' : 'invalid', message: v.error };
+    }
+    const { label } = describeFrenchAddressing(v.cleaned);
+    return { state: 'valid', message: `Adresse de facturation · ${label.toLowerCase()} · SIREN ${formatIdentifier(v.siren)}` };
+  }
   const digits = value.replace(/\D/g, '');
   if (!digits) return { state: 'empty', message: null };
   if (digits.length !== 9 && digits.length !== 14) {
@@ -26,29 +38,34 @@ export function liveValidation(value) {
 /**
  * Grand champ de recherche façon « barre de commande ».
  * Formate automatiquement la saisie (750 620 585 00018) en conservant la position du curseur.
+ * Accepte aussi une adresse de facturation complète (431923796_4S), dont seul le SIREN est espacé.
  */
 export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubmit, loading }, inputRef) {
-  const caretDigits = useRef(null);
+  // Nombre de caractères (hors espaces) avant le curseur : le formatage n'ajoute ou ne retire que des espaces
+  const caretChars = useRef(null);
   const status = liveValidation(value);
 
-  // Après reformatage, replace le curseur après le même nombre de chiffres qu'avant
+  // Après reformatage, replace le curseur après le même nombre de caractères (hors espaces) qu'avant
   useLayoutEffect(() => {
     const input = inputRef.current;
-    if (caretDigits.current == null || !input) return;
+    if (caretChars.current == null || !input) return;
     let pos = 0;
     let seen = 0;
-    while (pos < value.length && seen < caretDigits.current) {
-      if (/\d/.test(value[pos])) seen++;
+    while (pos < value.length && seen < caretChars.current) {
+      if (/\S/.test(value[pos])) seen++;
       pos++;
     }
     input.setSelectionRange(pos, pos);
-    caretDigits.current = null;
+    caretChars.current = null;
   }, [value, inputRef]);
 
   const handleChange = (e) => {
     const { value: raw, selectionStart } = e.target;
-    caretDigits.current = raw.slice(0, selectionStart ?? raw.length).replace(/\D/g, '').length;
-    onChange(formatIdentifier(raw));
+    const formatted = formatIdentifier(raw);
+    // En mode chiffres seuls, les autres caractères tapés sont retirés : on ne compte que les chiffres
+    const keep = isAddressInput(raw) ? /\S/g : /\d/g;
+    caretChars.current = (raw.slice(0, selectionStart ?? raw.length).match(keep) || []).length;
+    onChange(formatted);
   };
 
   const StatusIcon = { valid: CheckCircle2, invalid: XCircle }[status.state];
@@ -79,12 +96,12 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
           ref={inputRef}
           value={value}
           onChange={handleChange}
-          inputMode="numeric"
           autoComplete="off"
+          autoCapitalize="off"
           spellCheck={false}
           autoFocus
-          placeholder="SIRET ou SIREN…"
-          aria-label="SIRET ou SIREN"
+          placeholder="SIRET, SIREN ou adresse (SIREN_suffixe)…"
+          aria-label="SIRET, SIREN ou adresse de facturation"
           aria-invalid={status.state === 'invalid'}
           aria-describedby="search-hint"
           className="h-14 min-w-0 flex-1 bg-transparent font-mono text-lg tracking-wide text-slate-900 outline-none placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400 sm:h-16 sm:text-xl dark:text-white"
@@ -115,7 +132,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
             (status.state === 'partial' || status.state === 'empty') && 'text-slate-400',
           )}
         >
-          {status.message || 'Saisissez un SIREN (9 chiffres) ou un SIRET (14 chiffres)'}
+          {status.message || 'Saisissez un SIREN (9 chiffres), un SIRET (14 chiffres) ou une adresse complète (ex. 431923796_4S)'}
         </p>
         <button type="submit" disabled={loading || status.state !== 'valid'} className="btn-primary h-9 sm:hidden">
           Rechercher

@@ -134,8 +134,7 @@ export function ResultCard({ response, onRefresh, refreshing }) {
         />
         <Detail
           label="Identifiant Peppol"
-          value={r.participantId}
-          display={r.participantShortId}
+          value={r.participantShortId}
           mono
           hint={[
             r.addressing && `Format : ${r.addressing.format}${r.addressing.extra ? ` (« ${r.addressing.extra} »)` : ''}`,

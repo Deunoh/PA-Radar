@@ -1,6 +1,7 @@
 /**
- * Outils de manipulation des identifiants d'entreprise français (SIREN / SIRET)
- * et de construction des identifiants de participant Peppol.
+ * Outils de manipulation des identifiants d'entreprise français (SIREN / SIRET), des adresses
+ * de facturation de la réforme (SIREN_SUFFIXE, SIREN_SIRET_CODEROUTAGE…) et de construction
+ * des identifiants de participant Peppol.
  *
  * Ce module est partagé entre le front (validation en direct, formatage)
  * et le back (validation avant interrogation de Peppol).
@@ -77,24 +78,61 @@ function siretKeyIsValid(siret) {
 /**
  * @typedef {Object} IdentifierValidation
  * @property {boolean} valid
- * @property {string} cleaned      saisie nettoyée
- * @property {'siren'|'siret'|null} type
+ * @property {string} cleaned      saisie nettoyée (pour une adresse : la valeur sans schéma, ex. "431923796_4S")
+ * @property {'siren'|'siret'|'address'|null} type
  * @property {string|null} siren
  * @property {string|null} siret
  * @property {string|null} error   message d'erreur en français si invalide
  */
 
+/** Longueur maximale d'une adresse de facturation de la réforme (valeur après « 0225: »). */
+const MAX_ADDRESS_LENGTH = 100;
+
 /**
- * Valide une saisie SIREN (9 chiffres) ou SIRET (14 chiffres).
+ * Indique si une saisie ressemble à une adresse de facturation complète plutôt qu'à un SIREN/SIRET :
+ * elle contient « _ » (SIREN_SUFFIXE…) ou un schéma (« 0225: »).
+ * @param {string} raw
+ */
+export function isAddressInput(raw) {
+  return /[_:]/.test(String(raw ?? ''));
+}
+
+/**
+ * Valide une adresse de facturation de la réforme (schéma Peppol 0225) saisie en entier :
+ * « 431923796_4S », « 0225:431923796_4S » ou « iso6523-actorid-upis::0225:431923796_4S ».
+ * Les tirets et points font partie de l'adresse (codes de routage) : seuls les espaces sont retirés.
+ * @param {string} raw
+ * @returns {IdentifierValidation}
+ */
+function validateAddress(raw) {
+  const compact = String(raw ?? '').replace(/[\s  ]/g, '');
+  const value = compact.replace(new RegExp(`^(?:${PARTICIPANT_SCHEME}::)?0225:`, 'i'), '');
+  const invalid = (error) => ({ valid: false, cleaned: value, type: null, siren: null, siret: null, error });
+
+  if (value.includes(':')) return invalid('Seules les adresses de la réforme française (0225) sont acceptées');
+  const m = /^(\d+)_(.*)$/.exec(value);
+  if (!m || m[1].length !== 9) return invalid("L'adresse doit commencer par le SIREN (9 chiffres) suivi de « _ »");
+  if (!luhnCheck(m[1])) return invalid('Clé de contrôle du SIREN invalide');
+  if (!m[2]) return invalid('Complétez avec le suffixe, le SIRET ou le code de routage');
+  if (value.length > MAX_ADDRESS_LENGTH) return invalid(`L'adresse ne peut pas dépasser ${MAX_ADDRESS_LENGTH} caractères`);
+  if (!/^[A-Za-z0-9._\-+@]+$/.test(m[2])) return invalid("L'adresse contient un caractère non autorisé");
+  const { siret } = describeFrenchAddressing(value);
+  return { valid: true, cleaned: value, type: 'address', siren: m[1], siret, error: null };
+}
+
+/**
+ * Valide une saisie : SIREN (9 chiffres), SIRET (14 chiffres) ou adresse de facturation complète
+ * de la réforme (SIREN_SUFFIXE, SIREN_SIRET, SIREN_SIRET_CODEROUTAGE, avec ou sans « 0225: »).
  * @param {string} raw
  * @returns {IdentifierValidation}
  */
 export function validateIdentifier(raw) {
+  if (isAddressInput(raw)) return validateAddress(raw);
   const cleaned = cleanIdentifier(raw);
   const invalid = (error) => ({ valid: false, cleaned, type: null, siren: null, siret: null, error });
 
   if (!cleaned) return invalid('Veuillez saisir un SIRET ou un SIREN');
-  if (!/^\d+$/.test(cleaned)) return invalid("L'identifiant ne doit contenir que des chiffres");
+  if (!/^\d+$/.test(cleaned)) return invalid("L'identifiant ne doit contenir que des chiffres (ou être une adresse SIREN_…)");
 
   if (cleaned.length === 9) {
     if (!luhnCheck(cleaned)) return invalid('Clé de contrôle invalide');
@@ -115,11 +153,17 @@ export function validateIdentifier(raw) {
 /**
  * Formate un identifiant pour l'affichage : « 750 620 585 » ou « 750 620 585 00018 ».
  * Fonctionne aussi sur une saisie partielle (formatage pendant la frappe).
- * Les caractères non numériques sont retirés.
+ * Les caractères non numériques sont retirés, sauf pour une adresse complète : seul son SIREN
+ * est espacé (« 431 923 796_4S »), le reste est gardé tel quel, sans espaces.
  * @param {string} value
  * @returns {string}
  */
 export function formatIdentifier(value) {
+  if (isAddressInput(value)) {
+    const compact = String(value).replace(/[\s  ]/g, '');
+    const m = /^(\d{9})_(.*)$/.exec(compact);
+    return m ? `${formatIdentifier(m[1])}_${m[2]}` : compact;
+  }
   const digits = String(value ?? '').replace(/\D/g, '').slice(0, 14);
   const groups = [digits.slice(0, 3), digits.slice(3, 6), digits.slice(6, 9), digits.slice(9, 14)];
   return groups.filter(Boolean).join(' ');
@@ -146,10 +190,24 @@ export function buildParticipantId(scheme, value) {
 
 /**
  * Construit la liste ordonnée des identifiants de participant à tester.
- * @param {{ siren: string, siret?: string|null }} ids
+ * Pour une adresse saisie en entier (type « address »), seule cette adresse est testée.
+ * @param {{ siren: string, siret?: string|null, type?: string|null, cleaned?: string|null }} ids
  * @returns {Candidate[]}
  */
-export function buildCandidates({ siren, siret = null }) {
+export function buildCandidates({ siren, siret = null, type = null, cleaned = null }) {
+  // Adresse saisie en entier : c'est la seule à vérifier
+  if (type === 'address') {
+    const { label } = describeFrenchAddressing(cleaned);
+    return [
+      {
+        scheme: '0225',
+        value: cleaned,
+        shortId: `0225:${cleaned}`,
+        participantId: buildParticipantId('0225', cleaned),
+        label: `Réforme FR · ${label.charAt(0).toLowerCase()}${label.slice(1)} (adresse saisie)`,
+      },
+    ];
+  }
   const values = { siren, siret, siren_siret: siret ? `${siren}_${siret}` : null };
   return CANDIDATE_SCHEMES.filter((c) => values[c.uses]).map((c) => {
     const value = values[c.uses];
@@ -205,7 +263,10 @@ export function splitIdentifierList(text) {
     const trimmed = chunk.trim();
     if (!trimmed) continue;
     const whole = cleanIdentifier(trimmed);
-    if (/^\d{9}$|^\d{14}$/.test(whole)) {
+    if (isAddressInput(trimmed)) {
+      // Adresse complète (SIREN_SUFFIXE…) : gardée telle quelle, une par segment
+      for (const part of trimmed.split(/\s+/)) out.push(part);
+    } else if (/^\d{9}$|^\d{14}$/.test(whole)) {
       out.push(whole);
     } else {
       for (const part of trimmed.split(/\s+/)) {

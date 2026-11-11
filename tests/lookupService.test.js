@@ -113,4 +113,20 @@ describe('LookupService', () => {
     const service = new LookupService({ source: new FakeSource() });
     await expect(service.lookup('75062058500019')).rejects.toMatchObject({ code: 'INVALID_ID', message: 'Clé de contrôle invalide' });
   });
+
+  it('adresse complète saisie : ne vérifie qu\'elle, sans interroger l\'annuaire', async () => {
+    const source = new FakeSource();
+    let directorySearched = false;
+    source.searchDirectory = async () => {
+      directorySearched = true;
+      return null;
+    };
+    const res = await new LookupService({ source }).lookup('750620585_suffixe');
+    expect(directorySearched).toBe(false);
+    expect(res.type).toBe('address');
+    expect(res.candidates.map((c) => c.shortId)).toEqual(['0225:750620585_suffixe']);
+    expect(res.directory.searched).toBe(false);
+    expect(res.result).toBeNull();
+  });
 });
+

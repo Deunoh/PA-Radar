@@ -35,7 +35,7 @@ export function History({ items, onSelect, onClear }) {
                 )}
                 title={item.found ? 'Inscrit sur Peppol' : item.found === false ? 'Non trouvé' : 'Erreur'}
               />
-              <span className="w-40 shrink-0 font-mono text-[13px] text-slate-600 dark:text-slate-300">{formatIdentifier(item.id)}</span>
+              <span className="w-40 shrink-0 truncate font-mono text-[13px] text-slate-600 dark:text-slate-300" title={item.id}>{formatIdentifier(item.id)}</span>
               <span className="min-w-0 flex-1 truncate text-sm">
                 {item.name || <span className="text-slate-400">{item.found === false ? 'Non inscrit' : '—'}</span>}
                 {item.pa && <span className="text-slate-400"> · {item.pa}</span>}
