@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Search, CheckCircle2, XCircle, Loader2, CornerDownLeft } from 'lucide-react';
+import { Search, CheckCircle2, XCircle, Loader2, CornerDownLeft, ArrowRight } from 'lucide-react';
 import { describeFrenchAddressing, formatIdentifier, isAddressInput, validateIdentifier } from '../../../shared/identifiers.js';
 import { cx } from '../../utils/format.js';
 
@@ -114,6 +114,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
           autoCapitalize="off"
           spellCheck={false}
           autoFocus
+          enterKeyHint="search"
           placeholder={narrow ? 'SIRET, SIREN ou adresse' : 'SIRET, SIREN ou adresse (SIREN_SUFFIXE…)'}
           aria-label="SIRET, SIREN ou adresse de facturation"
           aria-invalid={status.state === 'invalid'}
@@ -130,9 +131,14 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
           <button
             type="submit"
             disabled={loading || status.state !== 'valid'}
-            className="btn-primary hidden h-9 sm:inline-flex"
+            aria-label="Rechercher"
+            className="btn-primary -mr-1.5 size-10 shrink-0 !p-0 sm:mr-0 sm:h-9 sm:w-auto sm:!px-3.5"
           >
-            Rechercher <CornerDownLeft className="size-3.5 opacity-70" />
+            {/* Mobile : flèche seule dans le champ ; ordinateur : texte et rappel de la touche Entrée */}
+            <ArrowRight className="size-5 sm:hidden" />
+            <span className="hidden items-center gap-2 sm:inline-flex">
+              Rechercher <CornerDownLeft className="size-3.5 opacity-70" />
+            </span>
           </button>
         )}
       </div>
@@ -148,9 +154,6 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
         >
           {status.message}
         </p>
-        <button type="submit" disabled={loading || status.state !== 'valid'} className="btn-primary h-9 sm:hidden">
-          Rechercher
-        </button>
       </div>
     </form>
   );
