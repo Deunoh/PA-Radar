@@ -107,7 +107,7 @@ export function SearchView({ sml, pendingId, onPendingConsumed }) {
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Identifiez la plateforme agréée d'un client via Peppol</h1>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Une réponse en quelques secondes, prête à coller dans le ticket.
+            Lu en direct sur le réseau Peppol, au moment de la recherche.
           </p>
         </div>
         <div className="mx-auto max-w-2xl">
