@@ -53,7 +53,7 @@ export function NotFoundCard({ response }) {
       </div>
       <div className="border-t border-slate-100 px-6 py-3.5 dark:border-slate-800">
         <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2 sm:flex sm:flex-wrap">
           <VerificationLinks siren={response.siren} siret={response.siret} />
         </div>
       </div>
@@ -109,7 +109,7 @@ export function ErrorCard({ error, onRetry, siren, siret }) {
           <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
             {error.code === 'API_UNAVAILABLE' ? 'En attendant, vérifier sur' : 'Vérifier sur'}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-2 sm:flex sm:flex-wrap">
             <VerificationLinks siren={siren} siret={siret} />
           </div>
         </div>
