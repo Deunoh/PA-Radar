@@ -105,9 +105,9 @@ export function SearchView({ sml, pendingId, onPendingConsumed }) {
     <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 sm:px-6">
       <section className={phase === 'idle' ? 'pt-[12vh] sm:pt-[16vh]' : 'pt-8 sm:pt-10'} style={{ transition: 'padding 0.4s cubic-bezier(0.16,1,0.3,1)' }}>
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Quelle plateforme reçoit les factures de votre client ?</h1>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Identifiez la plateforme agréée d'un client via Peppol</h1>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            PAradar interroge le réseau Peppol et vous répond en quelques secondes.
+            Une réponse en quelques secondes, prête à coller dans le ticket.
           </p>
         </div>
         <div className="mx-auto max-w-2xl">
