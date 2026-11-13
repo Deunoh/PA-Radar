@@ -234,7 +234,7 @@ export function ResultCard({ response, onRefresh, refreshing }) {
       {/* ——— Vérification sur les sites officiels ——— */}
       <div className="border-t border-slate-100 px-5 py-3.5 sm:px-7 dark:border-slate-800">
         <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Vérifier sur</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2 sm:flex sm:flex-wrap">
           <VerificationLinks siren={response.siren} siret={response.siret} />
         </div>
       </div>

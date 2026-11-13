@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Search, Layers, Info } from 'lucide-react';
-import { Header } from './components/layout/Header.jsx';
+import { Header, MobileNav } from './components/layout/Header.jsx';
 import { Disclaimer } from './components/layout/Disclaimer.jsx';
 import { SearchView } from './components/search/SearchView.jsx';
 import { BatchView } from './components/batch/BatchView.jsx';
@@ -10,9 +10,9 @@ import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
 const TABS = [
-  { id: 'search', label: 'Recherche', icon: Search },
-  { id: 'batch', label: 'Recherche en lot', icon: Layers },
-  { id: 'about', label: 'À propos', icon: Info },
+  { id: 'search', label: 'Recherche', shortLabel: 'Recherche', icon: Search },
+  { id: 'batch', label: 'Recherche en lot', shortLabel: 'En lot', icon: Layers },
+  { id: 'about', label: 'À propos', shortLabel: 'À propos', icon: Info },
 ];
 
 export default function App() {
@@ -35,7 +35,8 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // Sur mobile, marge basse pour la barre d'onglets fixe (et la zone du geste d'accueil des iPhone)
+    <div className="flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
       <Header tabs={TABS} activeTab={tab} onTabChange={setTab} isDark={isDark} onToggleTheme={toggle} sml={sml} onSmlChange={setSml} />
       <main className="flex-1">
         {/* Les vues restent montées pour conserver leur état (lot en cours, résultat affiché…) */}
@@ -53,6 +54,7 @@ export default function App() {
         </div>
       </main>
       <Disclaimer onShowLegal={() => showTab('legal')} />
+      <MobileNav tabs={TABS} activeTab={tab} onTabChange={showTab} />
     </div>
   );
 }

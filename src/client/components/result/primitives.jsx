@@ -147,7 +147,7 @@ function OfficialLink({ href, icon, label, title, copyValue, copyLabel }) {
       rel="noopener noreferrer"
       title={title || `Vérifier sur ${label} (nouvel onglet)`}
       onClick={copyValue ? () => copy(copyValue, `${copyLabel} ${copyValue} copié : collez-le dans la recherche Chorus Pro`) : undefined}
-      className="btn-secondary h-9 gap-2 whitespace-nowrap !pl-2"
+      className="btn-secondary h-10 justify-start gap-2 whitespace-nowrap !pl-2 sm:h-9 sm:justify-center"
     >
       {!Icon ? (
         <img src={icon} alt="" className="size-5 rounded-md bg-white ring-1 ring-slate-200 dark:ring-slate-700" />
@@ -158,7 +158,7 @@ function OfficialLink({ href, icon, label, title, copyValue, copyLabel }) {
         </span>
       )}
       {label}
-      <ExternalLink className="size-3.5 text-slate-400" />
+      <ExternalLink className="ml-auto size-3.5 text-slate-400 sm:ml-0" />
     </a>
   );
 }

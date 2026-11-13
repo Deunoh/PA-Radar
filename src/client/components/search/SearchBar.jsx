@@ -1,4 +1,4 @@
-import { forwardRef, useLayoutEffect, useRef } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Search, CheckCircle2, XCircle, Loader2, CornerDownLeft } from 'lucide-react';
 import { describeFrenchAddressing, formatIdentifier, isAddressInput, validateIdentifier } from '../../../shared/identifiers.js';
 import { cx } from '../../utils/format.js';
@@ -40,7 +40,21 @@ export function liveValidation(value) {
  * Formate automatiquement la saisie (750 620 585 00018) en conservant la position du curseur.
  * Accepte aussi une adresse de facturation complète (SIREN_SUFFIXE…), dont seul le SIREN est espacé.
  */
+/** Vrai sur un écran étroit (téléphone), où le texte d'aide complet du champ serait coupé. */
+function useNarrowScreen() {
+  const query = '(max-width: 639px)';
+  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const update = () => setNarrow(mq.matches);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return narrow;
+}
+
 export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubmit, loading }, inputRef) {
+  const narrow = useNarrowScreen();
   // Nombre de caractères (hors espaces) avant le curseur : le formatage n'ajoute ou ne retire que des espaces
   const caretChars = useRef(null);
   const status = liveValidation(value);
@@ -100,7 +114,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
           autoCapitalize="off"
           spellCheck={false}
           autoFocus
-          placeholder="SIRET, SIREN ou adresse (SIREN_SUFFIXE…)"
+          placeholder={narrow ? 'SIRET, SIREN ou adresse' : 'SIRET, SIREN ou adresse (SIREN_SUFFIXE…)'}
           aria-label="SIRET, SIREN ou adresse de facturation"
           aria-invalid={status.state === 'invalid'}
           aria-describedby="search-hint"

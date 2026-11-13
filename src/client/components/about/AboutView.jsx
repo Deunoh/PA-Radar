@@ -218,7 +218,7 @@ export function AboutView({ onStart, onShowLegal }) {
         <p className="mb-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           Chaque fiche résultat propose ces liens, ouverts directement sur l'entreprise recherchée quand c'est possible.
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2 sm:flex sm:flex-wrap">
           <OfficialLinks />
         </div>
       </Section>

@@ -22,7 +22,9 @@ export function Header({ tabs, activeTab, onTabChange, isDark, onToggleTheme, sm
           </span>
         </a>
 
-        <nav className="-mb-px ml-2 flex min-w-0 flex-1 gap-1 self-stretch overflow-x-auto sm:ml-6" aria-label="Sections">
+        {/* Sur mobile, les onglets passent dans la barre du bas (MobileNav) */}
+        <div className="flex-1 sm:hidden" />
+        <nav className="-mb-px ml-6 hidden min-w-0 flex-1 gap-1 self-stretch sm:flex" aria-label="Sections">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = tab.id === activeTab;
@@ -34,15 +36,14 @@ export function Header({ tabs, activeTab, onTabChange, isDark, onToggleTheme, sm
                 aria-current={active ? 'page' : undefined}
                 title={tab.label}
                 className={cx(
-                  'flex shrink-0 items-center gap-1.5 border-b-2 px-3 sm:px-2.5 text-sm font-medium transition-colors',
+                  'flex shrink-0 items-center gap-1.5 border-b-2 px-2.5 text-sm font-medium transition-colors',
                   active
                     ? 'border-accent-600 text-slate-900 dark:border-accent-400 dark:text-white'
                     : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200',
                 )}
               >
                 <Icon className="size-4" />
-                {/* Sur mobile, icônes seules (libellé lu par les lecteurs d'écran) */}
-                <span className="sr-only sm:not-sr-only">{tab.label}</span>
+                {tab.label}
               </button>
             );
           })}
@@ -50,7 +51,7 @@ export function Header({ tabs, activeTab, onTabChange, isDark, onToggleTheme, sm
 
         <div className="flex shrink-0 items-center gap-1">
           {sml !== 'peppolprod' && (
-            <span className="hidden rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 sm:inline dark:bg-amber-500/15 dark:text-amber-300">
+            <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
               SML test
             </span>
           )}
@@ -67,6 +68,42 @@ export function Header({ tabs, activeTab, onTabChange, isDark, onToggleTheme, sm
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * Barre d'onglets fixée en bas de l'écran, sur mobile uniquement (icône et libellé court,
+ * à portée de pouce). Les mentions légales n'y figurent pas : aucun onglet n'est alors surligné.
+ */
+export function MobileNav({ tabs, activeTab, onTabChange }) {
+  return (
+    <nav
+      aria-label="Sections"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/70 bg-slate-50/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl sm:hidden dark:border-slate-800/70 dark:bg-slate-950/90"
+    >
+      <div className="grid h-16 grid-cols-3">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const active = tab.id === activeTab;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onTabChange(tab.id)}
+              aria-current={active ? 'page' : undefined}
+              className={cx(
+                'relative flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors',
+                active ? 'text-accent-700 dark:text-accent-400' : 'text-slate-500 dark:text-slate-400',
+              )}
+            >
+              {active && <span className="absolute top-0 h-0.5 w-10 rounded-full bg-accent-600 dark:bg-accent-400" />}
+              <Icon className="size-5" strokeWidth={active ? 2.2 : 1.8} />
+              {tab.shortLabel || tab.label}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 

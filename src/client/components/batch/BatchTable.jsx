@@ -70,7 +70,46 @@ export function BatchTable({ items, paFilter, onPaFilterChange, onOpen }) {
           </select>
         </label>
       </div>
-      <div className="scrollbar-thin overflow-x-auto">
+      {/* Mobile : une carte par ligne, sans défilement horizontal */}
+      <ul className="divide-y divide-slate-100 sm:hidden dark:divide-slate-800">
+        {rows.map((i) => {
+          const st = STATUS[i.status] || STATUS.error;
+          const StIcon = st.icon;
+          const openable = i.status !== 'invalid';
+          return (
+            <li key={i.id} className="animate-fade">
+              <button
+                type="button"
+                disabled={!openable}
+                onClick={() => onOpen(i.id)}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left active:bg-slate-50 disabled:cursor-default dark:active:bg-slate-800/40"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-[13px] text-slate-900 dark:text-white">{/^\d+$/.test(i.id) ? formatIdentifier(i.id) : i.id}</span>
+                    <span className={cx('inline-flex shrink-0 items-center gap-1 text-xs', st.cls)} title={i.error || undefined}>
+                      <StIcon className="size-3.5" /> {st.label}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 truncate text-sm font-medium text-slate-900 dark:text-white">
+                    {i.pa || <span className="font-normal text-slate-400">Aucune plateforme</span>}
+                  </p>
+                  {(i.companyName || i.frenchReform) && (
+                  <p className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="truncate">{i.companyName}</span>
+                    {i.frenchReform && (
+                      <span className="inline-flex shrink-0 items-center gap-1 text-accent-700 dark:text-accent-300"><Flag className="size-3" /> Réforme FR</span>
+                    )}
+                  </p>
+                  )}
+                </div>
+                {openable && <ArrowUpRight className="size-4 shrink-0 text-slate-300 dark:text-slate-600" />}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="scrollbar-thin hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-100 dark:border-slate-800">
