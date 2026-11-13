@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Radar, Moon, Sun, Settings2, Check } from 'lucide-react';
+import { Moon, Sun, Settings2, Check } from 'lucide-react';
 import { cx } from '../../utils/format.js';
+import { Logo } from './Logo.jsx';
 
 const SML_OPTIONS = [
   { value: 'peppolprod', label: 'Production', hint: 'peppolprod' },
@@ -15,11 +16,9 @@ export function Header({ tabs, activeTab, onTabChange, isDark, onToggleTheme, sm
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-slate-50/80 backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-950/80">
       <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 sm:px-6">
         <a href="#" onClick={(e) => { e.preventDefault(); onTabChange('search'); }} className="flex shrink-0 items-center gap-2 py-3">
-          <span className="relative grid size-8 place-items-center rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 text-white shadow-sm shadow-accent-600/30">
-            <Radar className="size-[18px]" strokeWidth={2.2} />
-          </span>
+          <Logo className="size-8 drop-shadow-sm" />
           <span className="text-[15px] font-semibold tracking-tight">
-            PA<span className="text-accent-600 dark:text-accent-400">radar</span>
+            PA<span className="text-accent-700 dark:text-accent-400">radar</span>
           </span>
         </a>
 
