@@ -100,7 +100,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
           autoCapitalize="off"
           spellCheck={false}
           autoFocus
-          placeholder="SIRET, SIREN ou adresse (SIREN_suffixe)…"
+          placeholder="SIRET, SIREN ou adresse (SIREN_SUFFIXE…)"
           aria-label="SIRET, SIREN ou adresse de facturation"
           aria-invalid={status.state === 'invalid'}
           aria-describedby="search-hint"
@@ -132,7 +132,7 @@ export const SearchBar = forwardRef(function SearchBar({ value, onChange, onSubm
             (status.state === 'partial' || status.state === 'empty') && 'text-slate-400',
           )}
         >
-          {status.message || 'Saisissez un SIREN (9 chiffres), un SIRET (14 chiffres) ou une adresse complète (SIREN_SUFFIXE, SIREN_SIRET_CODEROUTAGE…)'}
+          {status.message}
         </p>
         <button type="submit" disabled={loading || status.state !== 'valid'} className="btn-primary h-9 sm:hidden">
           Rechercher
