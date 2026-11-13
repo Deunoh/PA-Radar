@@ -4,7 +4,7 @@ import { Mail } from 'lucide-react';
 export const LEGAL_CONTACT = 'deunoh.tv@gmail.com';
 
 /** Date de la dernière mise à jour de cette page, à changer à chaque modification du texte. */
-const LAST_UPDATE = '8 novembre 2026';
+const LAST_UPDATE = '13 novembre 2026';
 
 /**
  * Page « Mentions légales et données personnelles » (loi LCEN, article 6, et RGPD, article 13).
@@ -51,6 +51,11 @@ export function LegalView() {
           PAradar n'est pas une source officielle et ne garantit ni l'exactitude, ni l'exhaustivité, ni la disponibilité
           de ces informations. En cas de doute, l'annuaire de la facturation électronique (Portail Public de Facturation)
           fait foi. Les liens vers d'autres sites et les logos de ces sites appartiennent à leurs propriétaires respectifs.
+        </P>
+        <P>
+          Peppol est le réseau de facturation électronique géré par OpenPeppol AISBL. PAradar est un outil indépendant :
+          il n'est ni affilié à OpenPeppol, ni approuvé par lui, et le nom Peppol n'y est employé que pour désigner ce
+          réseau.
         </P>
       </Section>
 

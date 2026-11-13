@@ -2,11 +2,10 @@
  * Petits composants réutilisables : bouton copier, badge, section repliable, liens de vérification.
  */
 import { useState } from 'react';
-import { Check, Copy, ChevronRight, ExternalLink } from 'lucide-react';
+import { Check, Copy, ChevronRight, ExternalLink, Building2 } from 'lucide-react';
 import { useCopy } from '../../hooks/useCopy.js';
 import { cx } from '../../utils/format.js';
 import peppolCheckIcon from '../../assets/peppolcheck.svg';
-import annuaireIcon from '../../assets/annuaire-entreprises.svg';
 import chorusProIcon from '../../assets/chorus-pro.png';
 
 export function CopyButton({ value, label = 'Copier', message, className }) {
@@ -102,7 +101,7 @@ export function VerificationLinks({ siren, siret }) {
             ? `https://annuaire-entreprises.data.gouv.fr/etablissement/${siret}`
             : `https://annuaire-entreprises.data.gouv.fr/entreprise/${siren}`
         }
-        icon={annuaireIcon}
+        icon={Building2}
         label="Annuaire des Entreprises"
       />
       <OfficialLink
@@ -124,7 +123,7 @@ export function OfficialLinks() {
       <OfficialLink href="https://peppolcheck.fr/" icon={peppolCheckIcon} label="PeppolCheck.fr" title="PeppolCheck.fr (nouvel onglet)" />
       <OfficialLink
         href="https://annuaire-entreprises.data.gouv.fr/"
-        icon={annuaireIcon}
+        icon={Building2}
         label="Annuaire des Entreprises"
         title="Annuaire des Entreprises (nouvel onglet)"
       />
@@ -140,6 +139,7 @@ export function OfficialLinks() {
 
 function OfficialLink({ href, icon, label, title, copyValue, copyLabel }) {
   const copy = useCopy();
+  const Icon = typeof icon === 'string' ? null : icon;
   return (
     <a
       href={href}
@@ -149,7 +149,14 @@ function OfficialLink({ href, icon, label, title, copyValue, copyLabel }) {
       onClick={copyValue ? () => copy(copyValue, `${copyLabel} ${copyValue} copié : collez-le dans la recherche Chorus Pro`) : undefined}
       className="btn-secondary h-9 gap-2 whitespace-nowrap !pl-2"
     >
-      <img src={icon} alt="" className="size-5 rounded-md bg-white ring-1 ring-slate-200 dark:ring-slate-700" />
+      {!Icon ? (
+        <img src={icon} alt="" className="size-5 rounded-md bg-white ring-1 ring-slate-200 dark:ring-slate-700" />
+      ) : (
+        // Icône neutre : le logo de l'Annuaire des Entreprises contient le bloc Marianne, réservé aux services de l'État
+        <span className="grid size-5 place-items-center rounded-md bg-white text-slate-600 ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700">
+          <Icon className="size-3.5" />
+        </span>
+      )}
       {label}
       <ExternalLink className="size-3.5 text-slate-400" />
     </a>
