@@ -52,7 +52,7 @@ const BENEFITS = [
   {
     icon: Clock,
     title: 'Rapide',
-    text: "Une saisie, quelques secondes, une réponse. Plus besoin de passer d'un annuaire à l'autre ni de décoder des identifiants techniques.",
+    text: "Une saisie, environ une seconde, une réponse. Plus besoin de passer d'un annuaire à l'autre ni de décoder des identifiants techniques.",
   },
   {
     icon: ShieldCheck,
@@ -109,7 +109,7 @@ export function AboutView({ onStart, onShowLegal }) {
       <section>
         <p className="text-xs font-medium tracking-wide text-accent-600 uppercase dark:text-accent-400">À propos</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-          Savoir en quelques secondes qui reçoit les factures d'un client
+          Savoir en un instant qui reçoit les factures d'un client
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
           Depuis la réforme de la facturation électronique, une question revient sans cesse au support :{' '}

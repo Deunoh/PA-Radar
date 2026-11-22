@@ -1,6 +1,6 @@
 /**
  * Tests du parsing sur les réponses RÉELLES de l'API (enregistrées le 25/09/2026)
- * pour le participant iso6523-actorid-upis::0225:750620585 (EARL BISONS D'AUVERGNE).
+ * pour le participant iso6523-actorid-upis::0225:123456782 (ENTREPRISE EXEMPLE).
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -30,8 +30,8 @@ describe('réponse /ppidexistence', () => {
 describe('parseBusinessCard', () => {
   const bc = parseBusinessCard(serviceGroup.businessCard);
   it('lit le nom, l\'adresse et le statut', () => {
-    expect(bc.companyName).toBe("EARL BISONS D'AUVERGNE");
-    expect(bc.address).toBe('LD LE PLAIX 03240 ROCLES');
+    expect(bc.companyName).toBe("ENTREPRISE EXEMPLE");
+    expect(bc.address).toBe('1 RUE EXEMPLE 75001 PARIS');
     expect(bc.additionalInfo).toBe('FR_ASSUJETTI_ACTIVE');
     expect(bc.status).toBe('Assujetti actif');
     expect(bc.isActiveTaxpayer).toBe(true);
@@ -72,9 +72,9 @@ describe('extractEndpoints', () => {
   it('lit le certificat et le point d\'accès', () => {
     expect(endpoints.length).toBe(2); // un endpoint par process (regulated / non-regulated)
     const ep = endpoints[0];
-    expect(ep.certificate.operator).toBe('Cecurity.com SA');
-    expect(ep.certificate.popId).toBe('POP000717');
-    expect(ep.serviceDescription).toBe('Cecurity (FR) Whitelabel AP');
+    expect(ep.certificate.operator).toBe('PLATEFORME EXEMPLE');
+    expect(ep.certificate.popId).toBe('POP000000');
+    expect(ep.serviceDescription).toBe('Plateforme Exemple (FR) Whitelabel AP');
     expect(new URL(ep.endpointUrl).hostname).toBe('ap.galaxygw.com');
     expect(ep.certificate.serial).toMatch(/^[0-9a-f]+$/);
   });
@@ -133,7 +133,7 @@ describe('isCertificateValid', () => {
 describe('buildResult + table de correspondance (cas réel complet)', () => {
   const types = parseDocumentTypes(serviceGroup.urls);
   const result = buildResult({
-    candidate: { participantId: 'iso6523-actorid-upis::0225:750620585', shortId: '0225:750620585', scheme: '0225' },
+    candidate: { participantId: 'iso6523-actorid-upis::0225:123456782', shortId: '0225:123456782', scheme: '0225' },
     smpHostUri: existence.smpHostURI,
     serviceGroup: { documentTypes: types, businessCard: parseBusinessCard(serviceGroup.businessCard) },
     referenceDocumentType: chooseReferenceDocumentType(types),
@@ -143,11 +143,11 @@ describe('buildResult + table de correspondance (cas réel complet)', () => {
 
   it('produit le résultat attendu', () => {
     expect(result).toMatchObject({
-      companyName: "EARL BISONS D'AUVERGNE",
-      address: 'LD LE PLAIX 03240 ROCLES',
+      companyName: "ENTREPRISE EXEMPLE",
+      address: '1 RUE EXEMPLE 75001 PARIS',
       status: 'Assujetti actif',
-      pa: { name: 'Cecurity.com SA', popId: 'POP000717', operator: 'Cecurity.com SA' },
-      serviceDescription: 'Cecurity (FR) Whitelabel AP',
+      pa: { name: 'PLATEFORME EXEMPLE', popId: 'POP000000', operator: 'PLATEFORME EXEMPLE' },
+      serviceDescription: 'Plateforme Exemple (FR) Whitelabel AP',
       whiteLabel: true,
       technicalHost: 'Tickstar',
       endpointHost: 'ap.galaxygw.com',

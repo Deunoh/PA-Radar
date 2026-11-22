@@ -1,6 +1,6 @@
 {
   "smptype":"peppol",
-  "participantID":"iso6523-actorid-upis::0225:750620585",
+  "participantID":"iso6523-actorid-upis::0225:123456782",
   "documentTypeID":"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:peppol:france:billing:cius:1.0::2.1",
   "serviceinfo":{
     "processes":[
@@ -18,11 +18,11 @@
             "certificateDetails":{
               "parsable":true,
               "subject":{
-                "name":"CN=POP000717,OU=PEPPOL PRODUCTION AP,O=Cecurity.com SA,C=FR",
+                "name":"CN=POP000000,OU=PEPPOL PRODUCTION AP,O=PLATEFORME EXEMPLE,C=FR",
                 "C":"FR",
-                "O":"Cecurity.com SA",
+                "O":"PLATEFORME EXEMPLE",
                 "OU":"PEPPOL PRODUCTION AP",
-                "CN":"POP000717"
+                "CN":"POP000000"
               },
               "issuer":{
                 "name":"CN=PEPPOL ACCESS POINT CA - G3,O=OpenPEPPOL AISBL,C=BE",
@@ -37,9 +37,9 @@
               "validByDate":true,
               "sigAlgName":"SHA256withRSA"
             },
-            "serviceDescription":"Cecurity (FR) Whitelabel AP",
-            "technicalContactUrl":"kurt.menu@cecurity.com",
-            "technicalInformationUrl":"https://www.cecurity.com",
+            "serviceDescription":"Plateforme Exemple (FR) Whitelabel AP",
+            "technicalContactUrl":"support@plateforme-exemple.fr",
+            "technicalInformationUrl":"https://www.plateforme-exemple.fr",
             "extension":null
           }
         ],
@@ -59,11 +59,11 @@
             "certificateDetails":{
               "parsable":true,
               "subject":{
-                "name":"CN=POP000717,OU=PEPPOL PRODUCTION AP,O=Cecurity.com SA,C=FR",
+                "name":"CN=POP000000,OU=PEPPOL PRODUCTION AP,O=PLATEFORME EXEMPLE,C=FR",
                 "C":"FR",
-                "O":"Cecurity.com SA",
+                "O":"PLATEFORME EXEMPLE",
                 "OU":"PEPPOL PRODUCTION AP",
-                "CN":"POP000717"
+                "CN":"POP000000"
               },
               "issuer":{
                 "name":"CN=PEPPOL ACCESS POINT CA - G3,O=OpenPEPPOL AISBL,C=BE",
@@ -78,9 +78,9 @@
               "validByDate":true,
               "sigAlgName":"SHA256withRSA"
             },
-            "serviceDescription":"Cecurity (FR) Whitelabel AP",
-            "technicalContactUrl":"kurt.menu@cecurity.com",
-            "technicalInformationUrl":"https://www.cecurity.com",
+            "serviceDescription":"Plateforme Exemple (FR) Whitelabel AP",
+            "technicalContactUrl":"support@plateforme-exemple.fr",
+            "technicalInformationUrl":"https://www.plateforme-exemple.fr",
             "extension":null
           }
         ],

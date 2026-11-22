@@ -1,6 +1,6 @@
 /**
  * Test d'intégration du service de recherche avec une source simulée
- * qui renvoie les réponses réelles enregistrées (cas EARL BISONS D'AUVERGNE).
+ * qui renvoie les réponses réelles enregistrées (cas ENTREPRISE EXEMPLE).
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -36,26 +36,26 @@ describe('LookupService', () => {
   it('résout le cas réel de bout en bout', async () => {
     const source = new FakeSource();
     const service = new LookupService({ source, cacheTtlMs: 60_000 });
-    const res = await service.lookup('750 620 585 00018');
+    const res = await service.lookup('123 456 782 00010');
 
-    expect(res.siren).toBe('750620585');
+    expect(res.siren).toBe('123456782');
     expect(res.candidates.map((c) => [c.shortId, c.exists])).toEqual([
-      ['0225:750620585_75062058500018', false],
-      ['0225:750620585', true],
-      ['0002:750620585', false],
-      ['0009:75062058500018', false],
+      ['0225:123456782_12345678200010', false],
+      ['0225:123456782', true],
+      ['0002:123456782', false],
+      ['0009:12345678200010', false],
     ]);
     expect(res.result).toMatchObject({
-      companyName: "EARL BISONS D'AUVERGNE",
-      pa: { name: 'Cecurity.com SA', popId: 'POP000717', operator: 'Cecurity.com SA' },
+      companyName: "ENTREPRISE EXEMPLE",
+      pa: { name: 'PLATEFORME EXEMPLE', popId: 'POP000000', operator: 'PLATEFORME EXEMPLE' },
       technicalHost: 'Tickstar',
       frenchReform: { regulated: true, nonRegulated: true },
     });
-    expect(Object.keys(res.raw.serviceMetadata)).toEqual(['0225:750620585']);
+    expect(Object.keys(res.raw.serviceMetadata)).toEqual(['0225:123456782']);
 
     // Deuxième appel : servi par le cache, aucun nouvel appel à la source
     const callsBefore = source.calls;
-    const again = await service.lookup('75062058500018');
+    const again = await service.lookup('12345678200010');
     expect(again.cached).toBe(true);
     expect(source.calls).toBe(callsBefore);
   });
@@ -97,8 +97,8 @@ describe('LookupService', () => {
       }
     }
     const service = new LookupService({ source: new BrokenDirectory() });
-    const res = await service.lookup('750620585');
-    expect(res.result?.pa.popId).toBe('POP000717');
+    const res = await service.lookup('123456782');
+    expect(res.result?.pa.popId).toBe('POP000000');
     expect(res.directory).toMatchObject({ ok: false, error: 'Annuaire Peppol injoignable' });
   });
 
@@ -111,7 +111,7 @@ describe('LookupService', () => {
 
   it('rejette un identifiant invalide avec un message clair', async () => {
     const service = new LookupService({ source: new FakeSource() });
-    await expect(service.lookup('75062058500019')).rejects.toMatchObject({ code: 'INVALID_ID', message: 'Clé de contrôle invalide' });
+    await expect(service.lookup('12345678200019')).rejects.toMatchObject({ code: 'INVALID_ID', message: 'Clé de contrôle invalide' });
   });
 
   it('adresse complète saisie : ne vérifie qu\'elle, sans interroger l\'annuaire', async () => {

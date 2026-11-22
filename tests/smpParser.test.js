@@ -39,7 +39,8 @@ describe('parseXml', () => {
 
 describe('parseCertificate', () => {
   it('donne exactement le même résultat que Helger', () => {
-    const ep = JSON.parse(fixture('endpoint-0225-france-invoice.json')).serviceinfo.processes[0].endpoints[0];
+    // Certificat du point d'accès SAP de l'exemple public DANONE, tel que décodé par Helger
+    const ep = JSON.parse(fixture('certificate-sap-helger.json'));
     const { serial10, ...expected } = ep.certificateDetails;
     const { serial10: mySerial10, ...mine } = parseCertificate(ep.certificate, NOW);
     expect(mine).toEqual(expected);
@@ -119,15 +120,15 @@ describe('parseBusinessCardXml', () => {
 
   it('lit adresse, statut, site et contacts', () => {
     const xml = `<?xml version="1.0"?><ns5:BusinessCard xmlns:ns5="http://www.peppol.eu/schema/pd/businesscard/20180621/">
-      <ns5:ParticipantIdentifier scheme="iso6523-actorid-upis">0225:750620585</ns5:ParticipantIdentifier>
-      <ns5:BusinessEntity registrationDate="2026-08-27"><ns5:Name language="fr">EARL BISONS D'AUVERGNE</ns5:Name>
-      <ns5:CountryCode>FR</ns5:CountryCode><ns5:GeographicalInformation>LD LE PLAIX 03240 ROCLES</ns5:GeographicalInformation>
+      <ns5:ParticipantIdentifier scheme="iso6523-actorid-upis">0225:123456782</ns5:ParticipantIdentifier>
+      <ns5:BusinessEntity registrationDate="2026-08-27"><ns5:Name language="fr">ENTREPRISE EXEMPLE</ns5:Name>
+      <ns5:CountryCode>FR</ns5:CountryCode><ns5:GeographicalInformation>1 RUE EXEMPLE 75001 PARIS</ns5:GeographicalInformation>
       <ns5:WebsiteURI>https://exemple.fr</ns5:WebsiteURI><ns5:Contact TypeCode="support" Email="a@exemple.fr"/>
       <ns5:AdditionalInformation>FR_ASSUJETTI_ACTIVE</ns5:AdditionalInformation></ns5:BusinessEntity></ns5:BusinessCard>`;
     expect(parseBusinessCardXml(xml).entity[0]).toEqual({
-      name: [{ name: "EARL BISONS D'AUVERGNE", language: 'fr' }],
+      name: [{ name: "ENTREPRISE EXEMPLE", language: 'fr' }],
       countrycode: 'FR',
-      geoinfo: 'LD LE PLAIX 03240 ROCLES',
+      geoinfo: '1 RUE EXEMPLE 75001 PARIS',
       websiteuri: ['https://exemple.fr'],
       contact: [{ type: 'support', name: null, phonenumber: null, email: 'a@exemple.fr' }],
       additionalinfo: 'FR_ASSUJETTI_ACTIVE',

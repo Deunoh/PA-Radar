@@ -151,7 +151,7 @@ export function validateIdentifier(raw) {
 }
 
 /**
- * Formate un identifiant pour l'affichage : « 750 620 585 » ou « 750 620 585 00018 ».
+ * Formate un identifiant pour l'affichage : « 123 456 782 » ou « 123 456 782 00010 ».
  * Fonctionne aussi sur une saisie partielle (formatage pendant la frappe).
  * Les caractères non numériques sont retirés, sauf pour une adresse complète : seul son SIREN
  * est espacé (« 123 456 782_FACTURES »), le reste est gardé tel quel, sans espaces.
@@ -172,8 +172,8 @@ export function formatIdentifier(value) {
 /**
  * Construit un identifiant de participant Peppol complet.
  * @param {string} scheme ex. "0225"
- * @param {string} value  ex. "750620585"
- * @returns {string} ex. "iso6523-actorid-upis::0225:750620585"
+ * @param {string} value  ex. "123456782"
+ * @returns {string} ex. "iso6523-actorid-upis::0225:123456782"
  */
 export function buildParticipantId(scheme, value) {
   return `${PARTICIPANT_SCHEME}::${scheme}:${value}`;
@@ -183,7 +183,7 @@ export function buildParticipantId(scheme, value) {
  * @typedef {Object} Candidate
  * @property {string} scheme          ex. "0225"
  * @property {string} value           identifiant sans schéma
- * @property {string} shortId         ex. "0225:750620585"
+ * @property {string} shortId         ex. "0225:123456782"
  * @property {string} participantId   identifiant complet
  * @property {string} label           libellé lisible
  */
@@ -252,7 +252,7 @@ export function describeFrenchAddressing(value) {
 /**
  * Découpe un texte collé (recherche en lot) en liste d'identifiants.
  * Séparateurs : retour à la ligne, virgule, point-virgule, tabulation, espace.
- * Un segment comme « 750 620 585 00018 » (identifiant formaté avec espaces)
+ * Un segment comme « 123 456 782 00010 » (identifiant formaté avec espaces)
  * est conservé entier s'il forme un SIREN/SIRET une fois nettoyé.
  * @param {string} text
  * @returns {string[]} identifiants bruts (nettoyés), doublons retirés

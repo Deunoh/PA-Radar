@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { buildTicketSummary } from '../src/shared/summary.js';
 
 const base = {
-  siren: '750620585',
-  siret: '75062058500018',
+  siren: '123456782',
+  siret: '12345678200010',
   queriedAt: '2026-09-25T10:00:00Z',
-  candidates: [{ shortId: '0225:750620585' }, { shortId: '0002:750620585' }, { shortId: '0009:75062058500018' }],
+  candidates: [{ shortId: '0225:123456782' }, { shortId: '0002:123456782' }, { shortId: '0009:12345678200010' }],
 };
 
 describe('buildTicketSummary', () => {
@@ -13,19 +13,19 @@ describe('buildTicketSummary', () => {
     const text = buildTicketSummary({
       ...base,
       result: {
-        companyName: "EARL BISONS D'AUVERGNE",
-        participantShortId: '0225:750620585',
+        companyName: "ENTREPRISE EXEMPLE",
+        participantShortId: '0225:123456782',
         frenchReform: { regulated: true, nonRegulated: true },
-        pa: { name: 'Cecurity.com SA', popId: 'POP000717', operator: 'Cecurity.com SA' },
+        pa: { name: 'PLATEFORME EXEMPLE', popId: 'POP000000', operator: 'PLATEFORME EXEMPLE' },
         whiteLabel: true,
         technicalHost: 'Tickstar',
       },
     });
     expect(text).toBe(
       [
-        "SIRET 75062058500018 – EARL BISONS D'AUVERGNE",
-        'Peppol : oui (0225:750620585) – Réforme FR : oui',
-        "PA : Cecurity.com SA (POP000717) – Point d'accès marque blanche hébergé chez Tickstar",
+        "SIRET 12345678200010 – ENTREPRISE EXEMPLE",
+        'Peppol : oui (0225:123456782) – Réforme FR : oui',
+        "PA : PLATEFORME EXEMPLE (POP000000) – Point d'accès marque blanche hébergé chez Tickstar",
         'Vérifié le 25/09/2026 via SMP Peppol',
       ].join('\n'),
     );
@@ -33,8 +33,8 @@ describe('buildTicketSummary', () => {
 
   it('gère le cas non trouvé', () => {
     const text = buildTicketSummary({ ...base, siret: null, candidates: base.candidates.slice(0, 2), result: null });
-    expect(text).toContain('SIREN 750620585');
+    expect(text).toContain('SIREN 123456782');
     expect(text).toContain('Peppol : non');
-    expect(text).toContain('0225:750620585, 0002:750620585');
+    expect(text).toContain('0225:123456782, 0002:123456782');
   });
 });
