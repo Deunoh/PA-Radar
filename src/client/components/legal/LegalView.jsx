@@ -4,7 +4,7 @@ import { Mail } from 'lucide-react';
 export const LEGAL_CONTACT = 'deunoh.tv@gmail.com';
 
 /** Date de la dernière mise à jour de cette page, à changer à chaque modification du texte. */
-const LAST_UPDATE = '13 novembre 2026';
+const LAST_UPDATE = '22 novembre 2026';
 
 /**
  * Page « Mentions légales et données personnelles » (loi LCEN, article 6, et RGPD, article 13).
@@ -45,7 +45,7 @@ export function LegalView() {
         <P>
           PAradar est un outil gratuit qui indique, à partir d'un SIRET ou d'un SIREN, l'inscription d'une entreprise sur
           le réseau Peppol et le point d'accès qui reçoit ses factures. Les informations proviennent de sources publiques :
-          le registre et l'annuaire du réseau Peppol, les serveurs des opérateurs Peppol et le service peppol.helger.com.
+          le registre et l'annuaire du réseau Peppol, les serveurs des opérateurs Peppol et, en secours, le service peppol.helger.com.
         </P>
         <P>
           PAradar n'est pas une source officielle et ne garantit ni l'exactitude, ni l'exhaustivité, ni la disponibilité
@@ -83,9 +83,9 @@ export function LegalView() {
 
         <h3 className="mt-6 font-medium">Services interrogés</h3>
         <P>
-          Pour répondre, le serveur de PAradar transmet l'identifiant recherché à peppol.helger.com, à l'annuaire Peppol
-          (directory.peppol.eu), au registre Peppol (par une requête DNS via le résolveur de Cloudflare) et au serveur de
-          l'opérateur Peppol de l'entreprise. Ces requêtes partent du serveur : votre adresse IP ne leur est pas transmise.
+          Pour répondre, le serveur de PAradar transmet l'identifiant recherché au registre Peppol (par une requête DNS via
+          le résolveur de Cloudflare), à l'annuaire Peppol (directory.peppol.eu) et au serveur de l'opérateur Peppol de
+          l'entreprise ; en secours, si l'un d'eux ne répond pas, à peppol.helger.com. Ces requêtes partent du serveur : votre adresse IP ne leur est pas transmise.
         </P>
 
         <h3 className="mt-6 font-medium">Base légale, transferts et durées</h3>
