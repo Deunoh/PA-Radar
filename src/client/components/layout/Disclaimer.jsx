@@ -2,9 +2,6 @@ import { Info } from 'lucide-react';
 
 /** Version injectée au build (vite.config.js) ; absente dans les tests. */
 const VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : null;
-const BUILT_AT = VERSION
-  ? new Date(VERSION.builtAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' })
-  : null;
 
 /**
  * Avertissement permanent et discret sur la portée du résultat, et lien vers les mentions légales.
@@ -27,9 +24,7 @@ export function Disclaimer({ onShowLegal }) {
         </button>
       </p>
       {VERSION && (
-        <p className="mt-2 text-center font-mono text-[11px] text-slate-300 dark:text-slate-600" title={`Compilé le ${BUILT_AT}`}>
-          version {VERSION.commit} · {BUILT_AT}
-        </p>
+        <p className="mt-2 text-center font-mono text-[11px] text-slate-300 dark:text-slate-600">version {VERSION.commit}</p>
       )}
     </footer>
   );

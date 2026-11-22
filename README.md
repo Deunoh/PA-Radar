@@ -73,6 +73,10 @@ npm run deploy         # compile le front puis publie sur https://paradar.cstc.w
 npm run preview        # essai local avec le moteur de Cloudflare (http://localhost:8787)
 ```
 
+Chaque push sur `main` est déployé automatiquement (Workers Builds). Le pied de page du site affiche la
+version en ligne (`version e558f55` = début du commit compilé) : comparez-la au dernier commit de `main` pour
+savoir si le déploiement est terminé.
+
 Les variables d'environnement ci-dessus peuvent être définies dans le tableau de bord Cloudflare
 (Worker → Settings → Variables). Le cache et la limite de recherches restent en mémoire : Cloudflare
 pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entre elles.
@@ -83,7 +87,7 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
 
 ### Recherche unitaire
 
-1. Saisissez un SIRET ou un SIREN. La saisie est formatée automatiquement (`750 620 585 00018`) et validée
+1. Saisissez un SIRET ou un SIREN. La saisie est formatée automatiquement (`123 456 782 00010`) et validée
    en direct (longueur et clé de Luhn).
 
    On peut aussi saisir une **adresse de facturation complète** de la réforme, avec ou sans `0225:` :
@@ -91,7 +95,7 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
    alors cette seule adresse sur Peppol. C'est utile pour une adresse vue dans l'annuaire Chorus Pro mais que
    son opérateur n'a pas publiée dans l'annuaire Peppol : PAradar ne peut pas la découvrir à partir du SIREN
    seul, puisque les suffixes et codes de routage ne se devinent pas.
-2. Appuyez sur **Entrée**.
+2. Appuyez sur **Entrée**, ou sur le bouton du champ (une flèche sur mobile).
 3. La carte résultat affiche :
    - le nom et l'adresse de l'entreprise (Business Card de l'annuaire Peppol) ;
    - **la plateforme agréée** : nom de l'exploitant (`O=`) du certificat du point d'accès ;
@@ -101,11 +105,13 @@ pouvant faire tourner plusieurs copies du Worker, ils ne sont pas partagés entr
    - le bouton **« Copier le résumé pour un ticket »**, par exemple :
 
      ```
-     SIRET 75062058500018 – EARL BISONS D'AUVERGNE
-     Peppol : oui (0225:750620585) – Réforme FR : oui
-     PA : Cecurity.com SA (POP000717) – Point d'accès marque blanche hébergé chez Tickstar
+     SIRET 12345678200010 – ENTREPRISE EXEMPLE
+     Peppol : oui (0225:123456782) – Réforme FR : oui
+     PA : PLATEFORME EXEMPLE (POP000000) – Point d'accès marque blanche hébergé chez Tickstar
      Vérifié le 25/09/2026 via SMP Peppol
      ```
+
+     (exemple fictif)
 
 Les 10 dernières recherches sont gardées dans le navigateur (localStorage). Le bouton ⟳ de la carte relance
 la recherche sans passer par le cache.
@@ -114,10 +120,10 @@ la recherche sans passer par le cache.
 
 Collez une liste d'identifiants : un par ligne, ou séparés par virgule, point-virgule ou espace. Vous pouvez
 aussi importer un CSV : tous les SIREN et SIRET qu'il contient sont extraits. Les recherches sont faites une
-par une depuis le navigateur, avec une pause d'une seconde entre chaque, et la progression s'affiche en
-temps réel. Si la limite de recherches par minute est atteinte, le lot attend puis reprend tout seul.
+par une depuis le navigateur, avec une pause d'une seconde entre chaque (environ 2 s par ligne, soit
+environ 17 min pour 500), et la progression s'affiche en temps réel. Si la limite de recherches par minute est atteinte, le lot attend puis reprend tout seul.
 Un lot compte au maximum 500 identifiants.
-Le tableau se trie et se filtre par PA. L'export CSV utilise le point-virgule et l'UTF-8 avec BOM, pour
+Le tableau se trie et se filtre par PA (sur mobile, il s'affiche en liste de cartes). L'export CSV utilise le point-virgule et l'UTF-8 avec BOM, pour
 qu'Excel l'ouvre directement. Un clic sur une ligne ouvre la fiche détaillée.
 
 ### Réseau de test
@@ -137,7 +143,7 @@ Par défaut, PAradar fait une **recherche directe** : il interroge lui-même le 
 le serveur de l'opérateur (SMP) et l'annuaire Peppol. Si le registre ou un serveur ne répond pas, la même
 question est reposée à peppol.helger.com, qui produit exactement les mêmes informations (vérifié par
 `scripts/compare-sources.mjs`). Après une panne, la source principale est laissée de côté pendant une minute.
-La recherche directe prend environ 1,5 s, contre plusieurs secondes via Helger, limité à environ une requête
+La recherche directe prend environ 1 s, contre 10 à 20 s via Helger, limité à environ une requête
 par seconde. `PEPPOL_SOURCE` permet de revenir à l'ancien ordre (`helger-puis-direct`) ou de n'utiliser qu'une source.
 
 1. **Nettoyage et validation** : suppression des espaces, points et tirets, puis contrôle de la longueur
@@ -154,11 +160,11 @@ par seconde. `PEPPOL_SOURCE` permet de revenir à l'ancien ordre (`helger-puis-d
    confirmées auprès du SML. Si l'annuaire est injoignable, la recherche continue sans lui.
 4. Pour chaque candidat existant (les **3 premiers** au maximum : un grand compte peut avoir des dizaines
    de codes de routage, tous listés dans « Identifiants testés ») :
-   - lecture des **types de documents** et de la **Business Card** (`/smpquery?businessCard=true`) ;
+   - lecture des **types de documents** et de la **Business Card** sur le SMP de l'opérateur ;
    - choix d'un **type de document de référence** : une facture « France … » en priorité, sinon un autre
      type « France … », sinon « Peppol BIS Billing UBL Invoice V3 », sinon le premier disponible ;
-   - lecture du **point d'accès** pour ce type (`/smpquery/{doctype}`), avec dédoublonnage des endpoints
-     par numéro de série du certificat ;
+   - lecture du **point d'accès** pour ce type (adresse, certificat, contact), avec dédoublonnage des
+     endpoints par numéro de série du certificat ;
    - détection des processus `urn:peppol:france:billing:regulated` / `non-regulated`, qui donnent
      l'indicateur « réforme FR » ;
    - si la description du service mentionne « Whitelabel » ou « white label », déduction de
@@ -171,11 +177,12 @@ par seconde. `PEPPOL_SOURCE` permet de revenir à l'ancien ordre (`helger-puis-d
 - Cache mémoire de 15 min par identifiant et par SML. Deux recherches identiques simultanées ne font
   qu'un seul appel.
 - Limite de 30 recherches unitaires par minute.
-- **L'API Helger est limitée à environ 1 requête par seconde** et renvoie HTTP 429 au-delà. Tous les appels
-  passent donc par une file qui les espace de 1,2 s. Un 429 suspend la file pendant la durée `Retry-After`,
-  puis l'appel est réessayé (2 fois au maximum). Une recherche complète prend donc **environ 5 s**
-  (3 ou 4 existences + 2 lectures SMP ; la recherche dans l'annuaire Peppol se fait en parallèle).
-- La recherche directe n'a pas cette limite : une recherche complète prend environ 1 à 2 s.
+- La recherche directe fait ses appels en parallèle quand c'est possible : une recherche complète prend
+  **environ 1 s**. Si le registre ou un SMP ne répond pas, la question est reposée à Helger ; après une panne
+  du registre, la recherche directe est laissée de côté une minute.
+- **L'API Helger (secours) est limitée à environ 1 requête par seconde** et renvoie HTTP 429 au-delà. Ses
+  appels passent donc par une file qui les espace de 1,2 s. Un 429 suspend la file pendant la durée
+  `Retry-After`, puis l'appel est réessayé (2 fois au maximum). Via Helger, une recherche prend 10 à 20 s.
 - Messages d'erreur distincts : identifiant invalide, non trouvé sur Peppol, API Peppol indisponible,
   API Peppol saturée, SMP qui ne répond pas, limite locale atteinte.
 
@@ -204,9 +211,9 @@ src/server/
   parsing/peppolDocumentTypes.js  noms des types de documents (généré par scripts/update-document-types.mjs)
   sources/
     baseSource.js               interface commune des sources
-    helgerSource.js             source principale (peppol.helger.com)
-    directPeppolSource.js       recherche directe : DNS SML + appel direct du SMP
-    fallbackSource.js           Helger, puis la recherche directe s'il ne répond pas
+    directPeppolSource.js       source principale : recherche directe (DNS SML + SMP + annuaire)
+    helgerSource.js             source de secours (peppol.helger.com)
+    fallbackSource.js           enchaîne une source principale et une source de secours
     ppfSource.js                à implémenter : annuaire PPF via l'API PISTE (OAuth2)
 src/client/                     interface React + Tailwind
 tests/                          tests vitest, fixtures = réponses réelles de l'API
@@ -239,8 +246,11 @@ Les tests couvrent :
 
 - la validation SIREN / SIRET (clé de Luhn, messages d'erreur, exception La Poste) ;
 - la construction des identifiants Peppol et le découpage des listes collées ;
-- le parsing des réponses, sur les **réponses réelles** enregistrées pour `0225:750620585`
-  (EARL BISONS D'AUVERGNE, Cecurity / POP000717, hébergé chez Tickstar) ;
+- le parsing des réponses Helger, sur de **vraies réponses anonymisées** (ENTREPRISE EXEMPLE,
+  PLATEFORME EXEMPLE / POP000000, hébergé chez Tickstar) ;
+- la recherche directe : nom DNS du registre, lecture des XML des SMP et décodage des certificats, sur de
+  vraies réponses publiques (DANONE, point d'accès SAP) comparées à celles de Helger ;
+- le basculement vers la source de secours ;
 - le dédoublonnage des certificats, la détection de la réforme FR et de l'hébergeur en marque blanche ;
 - le résumé pour ticket, la gestion des 429 et des timeouts, et le service de
   recherche de bout en bout (source simulée, cache compris).
@@ -255,9 +265,9 @@ Les tests couvrent :
   PPF fait foi.
 - **Peppol uniquement.** Une entreprise dont la PA n'utilise pas Peppol, ou qui n'est pas encore inscrite,
   apparaît « non trouvée » alors qu'elle peut recevoir des factures électroniques.
-- **Dépendance à peppol.helger.com**, un service public tiers, gratuit, sans garantie de disponibilité et
-  limité en débit (environ 1 requête/s). Les recherches en lot sont donc lentes (environ 6 s par identifiant
-  hors cache). S'il tombe, la recherche directe prend le relais.
+- **Dépendance aux services publics de Peppol** (registre, annuaire, SMP des opérateurs) et, en secours, à
+  peppol.helger.com : tous gratuits et sans garantie de disponibilité. Si le serveur d'un opérateur est en
+  panne, aucune des deux sources ne peut lire sa fiche.
 - **Un seul type de document interrogé** (le type de référence). Un participant qui utilise des points
   d'accès différents selon le type de document n'est vu qu'à travers celui-ci.
 - **Business Card facultative** : certains SMP ne publient ni nom ni adresse, ou publient des données de

@@ -38,7 +38,7 @@ describe('parseDirectorySearch (cas réel)', () => {
     });
   });
   it('ignore les participants d\'un autre SIREN', () => {
-    expect(parseDirectorySearch(fixture, '750620585')).toEqual([]);
-    expect(parseDirectorySearch(null, '750620585')).toEqual([]);
+    expect(parseDirectorySearch(fixture, '123456782')).toEqual([]);
+    expect(parseDirectorySearch(null, '123456782')).toEqual([]);
   });
 });

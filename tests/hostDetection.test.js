@@ -3,7 +3,7 @@ import { isWhiteLabel, registrableDomain, detectTechnicalHost } from '../src/ser
 
 describe('hostDetection', () => {
   it('reconnaît les variantes de « white label »', () => {
-    expect(isWhiteLabel('Cecurity (FR) Whitelabel AP')).toBe(true);
+    expect(isWhiteLabel('Plateforme Exemple (FR) Whitelabel AP')).toBe(true);
     expect(isWhiteLabel('White label access point')).toBe(true);
     expect(isWhiteLabel('White-Label AP')).toBe(true);
     expect(isWhiteLabel('Pagero AP')).toBe(false);
@@ -18,7 +18,7 @@ describe('hostDetection', () => {
   it('déduit Tickstar pour un point d\'accès marque blanche', () => {
     expect(
       detectTechnicalHost({
-        serviceDescription: 'Cecurity (FR) Whitelabel AP',
+        serviceDescription: 'Plateforme Exemple (FR) Whitelabel AP',
         endpointUrl: 'https://ap.galaxygw.com/server/3089/as4',
         smpHostUri: 'https://smp.tickstar.com/peppol/',
       }),

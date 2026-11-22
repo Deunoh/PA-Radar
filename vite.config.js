@@ -7,7 +7,7 @@ const apiPort = process.env.PORT || 3001;
 
 /**
  * Version affichée en pied de page : le commit compilé (fourni par Cloudflare lors du build,
- * sinon lu dans git) et la date du build. Permet de vérifier d'un coup d'œil ce qui est en ligne.
+ * sinon lu dans git). Permet de vérifier d'un coup d'œil ce qui est en ligne.
  */
 function buildVersion() {
   let sha = process.env.WORKERS_CI_COMMIT_SHA || '';
@@ -18,7 +18,7 @@ function buildVersion() {
       sha = '';
     }
   }
-  return { commit: sha.slice(0, 7) || 'local', builtAt: new Date().toISOString() };
+  return { commit: sha.slice(0, 7) || 'local' };
 }
 
 export default defineConfig({

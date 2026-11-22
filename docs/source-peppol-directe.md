@@ -67,13 +67,13 @@ Pour chaque process et chaque endpoint (`NormalizedEndpoint`) :
 - `processIds` (sans schéma ; sert à `detectFrenchReform` : `urn:peppol:france:billing:regulated` /
   `non-regulated`), `transportProfile`, `endpointUrl`, `serviceDescription`, `technicalContact`,
   `technicalInformationUrl`, `activationDate`, `expirationDate`.
-- `certificate` : `operator` (O du sujet = nom de la plateforme), `popId` (CN, ex. `POP000717`),
+- `certificate` : `operator` (O du sujet = nom de la plateforme), `popId` (CN, ex. `POP000000`),
   `subject` (DN complet), `issuer` (DN complet), `serial` (hexadécimal en minuscules), `validFrom`,
   `validTo`, `validByDate`.
 - `_rawCertificate` (base64) : sert à dédupliquer quand il n'y a pas de numéro de série.
 
 Format Helger des certificats (à reproduire) :
-`subject.name = "CN=POP000717,OU=PEPPOL PRODUCTION AP,O=Cecurity.com SA,C=FR"`,
+`subject.name = "CN=POP000000,OU=PEPPOL PRODUCTION AP,O=PLATEFORME EXEMPLE,C=FR"`,
 `serial16 = "2ff1ab54…"`, `notBefore = "2026-03-15T00:00:00"` (UTC sans fuseau).
 `isCertificateValid()` accepte aussi les dates avec `Z`.
 
@@ -218,8 +218,8 @@ Liste d'origine :
   SMP, les SMP de grands opérateurs servant beaucoup de participants (recherche en lot).
 - **Délais** : garder `EXTERNAL_TIMEOUT_MS` ; SMP qui ne répond pas → `SMP_UNREACHABLE`
   (comme aujourd'hui).
-- **Choix de la source** : la nouvelle source peut servir de secours si Helger ne répond pas, puis
-  devenir la source principale si elle est fiable. À décider avec l'utilisateur.
+- **Choix de la source** : d'abord secours de Helger (08/11/2026), puis source principale avec Helger en
+  secours (22/11/2026), après comparaison complète (section 8).
 
 ## 6. Comment vérifier qu'on ne perd rien
 
@@ -240,8 +240,7 @@ Liste d'origine :
 
 `scripts/compare-sources.mjs` sur 26 participants servis par 26 SMP différents (Tickstar, EDICOM,
 B2Brouter, Esker, Saphety, Serensia, Cegedim, Pennylane, Tradeshift, ecosio, Qonto, Tessi…), puis sur la
-recherche complète de leurs SIREN et de quelques autres (DANONE par SIRET, 750620585, 923409346,
-732829320) : 54 comparaisons.
+recherche complète de leurs SIREN et de quelques autres (dont DANONE par SIRET) : 54 comparaisons.
 
 - Premier passage : 20 différences, en trois causes, toutes corrigées : fuseau et fractions de seconde
   des dates (voir section 5), noms des types PINT, retours à la ligne du certificat.
@@ -249,10 +248,11 @@ recherche complète de leurs SIREN et de quelques autres (DANONE par SIRET, 7506
   répondait HTTP 503. Les deux sources renvoient SMP_UNREACHABLE (même carte d'erreur) ; Helger dit
   « son SMP ne renvoie aucune information » (il traduit toute panne du SMP en 404), la recherche directe
   dit « ne répond pas correctement (HTTP 503) », ce qui est exact. Gardé tel quel.
-- Formats d'adressage de la réforme, vérifiés sur de vrais participants : SIREN (`0225:750620585`),
-  SIREN_SIRET (`0225:923409346_92340934600049`), SIREN_SUFFIXE (`0225:552032534_danonesender`,
-  `0225:552006454_achatpub_479046435`), SIREN_SIRET_CODEROUTAGE (`0225:538477050_53847705000016_cdo`,
-  `0225:421771874_42177187400011_lojii-30119169800036`, `0225:532310323_53231032300011__agdcl`).
+- Formats d'adressage de la réforme, tous rencontrés sur de vrais participants (exemples fictifs ici) :
+  SIREN (`0225:123456782`), SIREN_SIRET (`0225:123456782_12345678200010`), SIREN_SUFFIXE
+  (`0225:123456782_factures`, ou un suffixe composé comme `0225:123456782_achats_987654321`),
+  SIREN_SIRET_CODEROUTAGE (`0225:123456782_12345678200010_cdo`, y compris avec un double tiret bas
+  `…_12345678200010__service`).
   Deux détails de plus alignés sur Helger à cette occasion : « .000 » retiré des dates, espace finale
   gardée dans les textes (ex. « TX2 Acces point PROD »).
 

@@ -1,7 +1,7 @@
 /**
  * Fonctions pures de lecture des réponses JSON de l'API peppol.helger.com.
  *
- * Structure vérifiée sur le cas réel iso6523-actorid-upis::0225:750620585 :
+ * Structure vérifiée sur le cas réel iso6523-actorid-upis::0225:123456782 :
  *  - /ppidexistence  → { participantID, sml, smpHostURI, exists }
  *                      (HTTP 404 avec exists:false si le participant n'existe pas)
  *  - /smpquery?businessCard=true → { urls: [{ documentTypeID, niceName, state, isDeprecated }],

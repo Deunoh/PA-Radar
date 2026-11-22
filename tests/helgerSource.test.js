@@ -10,7 +10,7 @@ const json = (status, body, headers = {}) =>
 describe('HelgerSource', () => {
   it('lit exists:false sur une réponse HTTP 404', async () => {
     const src = new HelgerSource({ minIntervalMs: 0, fetchImpl: async () => json(404, { exists: false }) });
-    await expect(src.checkExistence('iso6523-actorid-upis::0002:750620585', { sml: 'peppolprod' })).resolves.toMatchObject({ exists: false });
+    await expect(src.checkExistence('iso6523-actorid-upis::0002:123456782', { sml: 'peppolprod' })).resolves.toMatchObject({ exists: false });
   });
 
   it('encode l\'identifiant de participant dans l\'URL', async () => {
@@ -23,8 +23,8 @@ describe('HelgerSource', () => {
         return json(200, { exists: true, smpHostURI: 'https://smp.tickstar.com/peppol/' });
       },
     });
-    const r = await src.checkExistence('iso6523-actorid-upis::0225:750620585', { sml: 'peppolprod' });
-    expect(calledUrl).toBe('https://api.test/ppidexistence/peppolprod/iso6523-actorid-upis%3A%3A0225%3A750620585');
+    const r = await src.checkExistence('iso6523-actorid-upis::0225:123456782', { sml: 'peppolprod' });
+    expect(calledUrl).toBe('https://api.test/ppidexistence/peppolprod/iso6523-actorid-upis%3A%3A0225%3A123456782');
     expect(r).toMatchObject({ exists: true, smpHostUri: 'https://smp.tickstar.com/peppol/' });
   });
 

@@ -37,7 +37,7 @@ export function liveValidation(value) {
 
 /**
  * Grand champ de recherche façon « barre de commande ».
- * Formate automatiquement la saisie (750 620 585 00018) en conservant la position du curseur.
+ * Formate automatiquement la saisie (123 456 782 00010) en conservant la position du curseur.
  * Accepte aussi une adresse de facturation complète (SIREN_SUFFIXE…), dont seul le SIREN est espacé.
  */
 /** Vrai sur un écran étroit (téléphone), où le texte d'aide complet du champ serait coupé. */

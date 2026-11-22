@@ -2,7 +2,7 @@
  * Source « lookup Peppol direct » : interroge l'infrastructure Peppol sans passer par peppol.helger.com.
  * Notes complètes et vérifiées (domaines, formats XML, champs à conserver) : docs/source-peppol-directe.md
  *
- *  1. SML : nom DNS du participant = base32(sha256(valeur en minuscules, ex. "0225:750620585")) sans "="
+ *  1. SML : nom DNS du participant = base32(sha256(valeur en minuscules, ex. "0225:123456782")) sans "="
  *     + ".iso6523-actorid-upis." + domaine du SML (config.smlDomains). Requête NAPTR via DNS-over-HTTPS
  *     (Cloudflare Workers ne fait pas de requête DNS native) → URL du SMP. NXDOMAIN → participant absent.
  *  2. SMP : GET {smp}/{participant} (ServiceGroup), GET {smp}/businesscard/{participant},
@@ -43,7 +43,7 @@ function base32(bytes) {
 
 /**
  * Nom DNS à interroger dans le SML pour un participant (Peppol Policy for use of identifiers 4.x).
- * @param {string} participantId ex. "iso6523-actorid-upis::0225:750620585"
+ * @param {string} participantId ex. "iso6523-actorid-upis::0225:123456782"
  * @param {string} smlDomain ex. "participant.sml.prod.tech.peppol.org"
  */
 export async function smlDnsName(participantId, smlDomain) {
