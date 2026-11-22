@@ -95,7 +95,7 @@ const LIMITS = [
   "Ce n'est pas une source officielle : en cas de doute, l'annuaire de la facturation électronique (PPF) fait foi.",
   "Le point d'accès désigne l'opérateur technique qui reçoit les factures. C'est généralement la plateforme agréée, mais ce peut être un sous-traitant.",
   "Seul le réseau Peppol est consulté : un client absent de Peppol peut tout de même recevoir des factures électroniques par d'autres voies.",
-  "PAradar dépend de services publics gratuits (peppol.helger.com, annuaire Peppol), sans garantie de disponibilité. Si peppol.helger.com ne répond pas, PAradar interroge directement le registre Peppol.",
+  "PAradar interroge directement les services publics du réseau Peppol (registre, annuaire, serveurs des opérateurs), sans garantie de disponibilité. Si l'un d'eux ne répond pas, il reprend la recherche via le service peppol.helger.com.",
 ];
 
 /**

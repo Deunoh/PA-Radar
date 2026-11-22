@@ -1,6 +1,6 @@
 /**
  * Source « avec secours » : interroge la source principale et, si elle ne répond pas,
- * reprend la même question auprès de la source de secours.
+ * reprend la même question auprès de la source de secours (par défaut : recherche directe, puis Helger).
  *
  * Les deux sources produisent les mêmes formes normalisées (voir baseSource.js) : une recherche
  * peut donc mélanger les deux sans que le résultat change.

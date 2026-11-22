@@ -11,7 +11,8 @@ import { BatchSummary } from './BatchSummary.jsx';
 import { BatchTable } from './BatchTable.jsx';
 
 /** Durée estimée d'une recherche non mise en cache (≈ 5 appels espacés de 1,2 s + pause d'1 s). */
-const ESTIMATED_MS_PER_ITEM = 6500;
+// Environ 1,5 s par recherche, mais la limite de 30 recherches par minute impose au moins 2 s
+const ESTIMATED_MS_PER_ITEM = 2100;
 /** Pause entre deux identifiants, pour ne pas surcharger les SMP. */
 const PAUSE_MS = 1000;
 const MAX_ITEMS = 500;

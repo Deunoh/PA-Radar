@@ -50,7 +50,7 @@ Il existe deux façons de lancer l'outil :
 | `CACHE_TTL_MINUTES`      | `15`                             | Durée du cache des recherches                         |
 | `RATE_LIMIT_PER_MINUTE`  | `30`                             | Recherches unitaires autorisées par minute et par IP  |
 | `EXTERNAL_TIMEOUT_MS`    | `10000`                          | Délai maximum d'un appel à l'API externe              |
-| `PEPPOL_SOURCE`          | `helger-puis-direct`             | Source des données : Helger avec la recherche directe en secours, `helger` seul ou `direct` seule |
+| `PEPPOL_SOURCE`          | `direct-puis-helger`             | Source des données : recherche directe avec Helger en secours, `helger-puis-direct` (l'inverse), `direct` seule ou `helger` seul |
 | `HELGER_API_BASE`        | `https://peppol.helger.com/api`  | URL de l'API Helger                                   |
 | `SML_DOMAIN_PROD`        | `participant.sml.prod.tech.peppol.org` | Registre Peppol (SML) de production, pour la recherche directe |
 | `SML_DOMAIN_TEST`        | `participant.sml.test.tech.peppol.org` | Registre Peppol (SML) de test                   |
@@ -129,21 +129,23 @@ Le menu ⚙ de l'en-tête bascule entre le SML de production (`peppolprod`) et c
 ## Fonctionnement
 
 ```
-Navigateur ──► /api/lookup ──► LookupService ──► source « helger » ──► peppol.helger.com ──► SML / SMP
-                                                  └─ si Helger ne répond pas ─► recherche directe ──► SML / SMP
+Navigateur ──► /api/lookup ──► LookupService ──► recherche directe ──► SML (DNS) / SMP / annuaire Peppol
+                                                  └─ si elle échoue ─► peppol.helger.com ──► SML / SMP
 ```
 
-Par défaut, les données viennent de peppol.helger.com. S'il ne répond pas, la **recherche directe** prend le
-relais : elle interroge elle-même le registre Peppol (SML, par DNS) puis le serveur de l'opérateur (SMP),
-et produit exactement les mêmes informations. Après une panne, Helger est laissé de côté pendant une minute.
-La variable `PEPPOL_SOURCE` permet de n'utiliser que l'une des deux sources.
+Par défaut, PAradar fait une **recherche directe** : il interroge lui-même le registre Peppol (SML, par DNS),
+le serveur de l'opérateur (SMP) et l'annuaire Peppol. Si le registre ou un serveur ne répond pas, la même
+question est reposée à peppol.helger.com, qui produit exactement les mêmes informations (vérifié par
+`scripts/compare-sources.mjs`). Après une panne, la source principale est laissée de côté pendant une minute.
+La recherche directe prend environ 1,5 s, contre plusieurs secondes via Helger, limité à environ une requête
+par seconde. `PEPPOL_SOURCE` permet de revenir à l'ancien ordre (`helger-puis-direct`) ou de n'utiliser qu'une source.
 
 1. **Nettoyage et validation** : suppression des espaces, points et tirets, puis contrôle de la longueur
    (9 ou 14 chiffres) et de la clé de Luhn. Les SIRET de La Poste suivent une règle spécifique.
 2. **Candidats construits**, par ordre de priorité : `0225:{SIREN}_{SIRET}` (réforme FR, maille
    établissement, si un SIRET a été saisi), `0225:{SIREN}` (réforme FR, maille SIREN), `0002:{SIREN}`,
    puis `0009:{SIRET}` si un SIRET a été saisi.
-3. **Existence** de chaque candidat construit (`/ppidexistence`), qui donne aussi l'adresse du SMP.
+3. **Existence** de chaque candidat construit (requête DNS au registre SML), qui donne aussi l'adresse du SMP.
    **En parallèle**, le SIREN est recherché dans l'**annuaire Peppol** (`directory.peppol.eu`, API de
    recherche publique). La réforme française autorise plusieurs « mailles » d'adressage
    (`SIREN`, `SIREN_SIRET`, `SIREN_SIRET_codeRoutage`, `SIREN_codeRoutage`) : une entreprise peut être

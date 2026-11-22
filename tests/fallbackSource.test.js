@@ -68,3 +68,13 @@ describe('FallbackSource', () => {
     await expect(new FallbackSource(primary, secondary).checkExistence('x', {})).rejects.toThrow('panne SML');
   });
 });
+
+describe('source par défaut', () => {
+  it('utilise la recherche directe, avec Helger en secours', async () => {
+    const { getDefaultSource } = await import('../src/server/sources/index.js');
+    const src = getDefaultSource();
+    expect(src).toBeInstanceOf(FallbackSource);
+    expect(src.primary.id).toBe('direct');
+    expect(src.secondary.id).toBe('helger');
+  });
+});

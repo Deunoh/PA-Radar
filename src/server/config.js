@@ -16,7 +16,7 @@ const parseTrustProxy = (value) => {
 
 export const SUPPORTED_SMLS = ['peppolprod', 'peppoltest'];
 
-export const PEPPOL_SOURCES = ['helger-puis-direct', 'helger', 'direct'];
+export const PEPPOL_SOURCES = ['direct-puis-helger', 'helger-puis-direct', 'direct', 'helger'];
 
 export const config = {
   port: int(process.env.PORT, 3001),
@@ -32,7 +32,7 @@ export const config = {
   },
   // Source des données Peppol : « helger-puis-direct » (Helger, et la recherche directe en secours
   // s'il ne répond pas), « helger » (Helger seul) ou « direct » (recherche directe seule)
-  peppolSource: PEPPOL_SOURCES.includes(process.env.PEPPOL_SOURCE) ? process.env.PEPPOL_SOURCE : 'helger-puis-direct',
+  peppolSource: PEPPOL_SOURCES.includes(process.env.PEPPOL_SOURCE) ? process.env.PEPPOL_SOURCE : 'direct-puis-helger',
   // Registre Peppol (SML), interrogé par la recherche directe. Repris par Peppol en 2026 : l'ancien
   // domaine de la Commission européenne (edelivery.tech.ec.europa.eu) ne répond plus.
   smlDomains: {

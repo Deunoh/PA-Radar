@@ -5,13 +5,15 @@ page d'accueil comprise). **Tout ce qui est marqué « vérifié » a été test
 
 ## État (08/11/2026)
 
-**Implémentée** dans `src/server/sources/directPeppolSource.js`, utilisée **en secours** de Helger
-(`src/server/sources/fallbackSource.js`) : si Helger renvoie API_UNAVAILABLE, UPSTREAM_RATE_LIMITED ou
-SMP_UNREACHABLE, la même question est posée à la recherche directe. Après une panne de Helger (les deux
-premiers codes), il est laissé de côté pendant une minute.
+**Implémentée** dans `src/server/sources/directPeppolSource.js`. Depuis le 22/11/2026, c'est la **source
+principale**, avec Helger **en secours** (`src/server/sources/fallbackSource.js`) : si la recherche directe
+renvoie API_UNAVAILABLE (registre ou résolveur DNS injoignable) ou SMP_UNREACHABLE (serveur de l'opérateur
+muet), la même question est posée à Helger. Après une panne du registre, la recherche directe est laissée de
+côté pendant une minute. Du 08/11 au 22/11/2026, l'ordre était inverse (Helger d'abord).
 
-- Choix de la source : variable `PEPPOL_SOURCE` = `helger-puis-direct` (défaut), `helger` ou `direct`.
-  Passer en « directe en principal » plus tard demandera une petite option de plus (ordre inversé).
+- Choix de la source : variable `PEPPOL_SOURCE` = `direct-puis-helger` (défaut), `helger-puis-direct`
+  (ancien ordre), `direct` ou `helger`.
+- Mesure du 22/11/2026 (serveur local, 4 SIREN) : 1,3 à 1,6 s en direct, 12 à 22 s via Helger, résultats identiques.
 - Le XML des SMP est traduit **au format JSON de Helger** (`src/server/parsing/smpParser.js`) puis lu par
   `helgerParser.js` : formes normalisées et vue JSON brute identiques. Les objets bruts de la recherche
   directe portent `source: "direct"`.

@@ -1,6 +1,8 @@
 /**
  * Registre des sources de données. La source utilisée est choisie par PEPPOL_SOURCE (config.peppolSource) :
- * par défaut Helger, avec la recherche Peppol directe en secours s'il ne répond pas.
+ * par défaut la recherche Peppol directe (SML + SMP), avec peppol.helger.com en secours.
+ * Les deux produisent exactement les mêmes informations (scripts/compare-sources.mjs) ; la recherche
+ * directe est bien plus rapide car elle n'a pas la limite d'environ une requête par seconde de Helger.
  */
 import { config } from '../config.js';
 import { HelgerSource } from './helgerSource.js';
@@ -14,11 +16,13 @@ export const sources = {
   ppf: new PpfSource(),
 };
 
-const fallback = new FallbackSource(sources.helger, sources.direct);
+const directThenHelger = new FallbackSource(sources.direct, sources.helger);
+const helgerThenDirect = new FallbackSource(sources.helger, sources.direct);
 
 /** Source utilisée par défaut pour la résolution Peppol. */
 export function getDefaultSource() {
   if (config.peppolSource === 'helger') return sources.helger;
   if (config.peppolSource === 'direct') return sources.direct;
-  return fallback;
+  if (config.peppolSource === 'helger-puis-direct') return helgerThenDirect;
+  return directThenHelger;
 }
